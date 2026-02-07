@@ -18,24 +18,28 @@ export async function themeSettings(container: any) {
     // Add section title
     const sectionTitle = document.createElement("div");
     sectionTitle.className = "lol-settings-general-section-title";
-    sectionTitle.textContent = "SIMPLE THEME";
+    sectionTitle.textContent = "ASTRANTE THEME";
     scrollable.appendChild(sectionTitle);
 
-    // Theme Enable Toggle (requires restart)
+    // Add restart notice
+    const restartNotice = document.createElement("p");
+    restartNotice.className = "lol-settings-general-subtitle";
+    restartNotice.textContent = "Requires client restart";
+    scrollable.appendChild(restartNotice);
+
+    // Theme Enable Toggle
     const enableRow = createCheckboxRow(
         "theme_enable",
         "theme_enabled",
-        true,
-        "Requires client restart"
+        true
     );
     scrollable.appendChild(enableRow);
 
-    // Hide TFT Toggle (requires restart)
+    // Hide TFT Toggle
     const hideTftRow = createCheckboxRow(
         "hide_tft",
         "hide_tft",
-        true,
-        "Requires client restart"
+        true
     );
     scrollable.appendChild(hideTftRow);
 
@@ -43,8 +47,7 @@ export async function themeSettings(container: any) {
     const autoAcceptRow = createCheckboxRow(
         "auto_accept",
         "auto_accept",
-        false,
-        null
+        false
     );
     scrollable.appendChild(autoAcceptRow);
 
@@ -55,8 +58,7 @@ export async function themeSettings(container: any) {
 function createCheckboxRow(
     titleKey: string,
     dataKey: string,
-    defaultValue: boolean,
-    subtitle: string | null
+    defaultValue: boolean
 ): HTMLElement {
     // Create row container
     const row = document.createElement("div");
@@ -103,14 +105,6 @@ function createCheckboxRow(
     checkbox.appendChild(label);
     row.appendChild(checkbox);
 
-    // Add subtitle if provided
-    if (subtitle) {
-        const subtitleElement = document.createElement("p");
-        subtitleElement.className = "lol-settings-general-subtitle";
-        subtitleElement.textContent = subtitle;
-        row.appendChild(subtitleElement);
-    }
-
     return row;
 }
 
@@ -118,7 +112,7 @@ function getStringSync(key: string): string {
     // Simple synchronous fallback for strings
     const strings: { [key: string]: string } = {
         "theme_enable": "Enable Theme",
-        "theme_enable_desc": "Enable or disable the Simple Theme",
+        "theme_enable_desc": "Enable or disable the Astrante Theme",
         "auto_accept": "Auto Accept",
         "auto_accept_desc": "Automatically accept match making queue",
         "hide_tft": "Hide TFT Tab",
