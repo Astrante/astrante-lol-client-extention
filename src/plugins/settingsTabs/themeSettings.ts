@@ -7,68 +7,87 @@ export async function themeSettings(container: any) {
     console.log('[SimpleTheme] themeSettings called!', container);
 
     const settingsContainer = document.createElement("div");
-    settingsContainer.style.cssText = "padding: 20px;";
+    settingsContainer.className = "lol-settings-options";
 
-    // Theme Enable Toggle
-    const enableRow = createToggleRow(
+    // Theme Enable Toggle (top row)
+    const enableRow = createCheckboxRow(
         "theme_enable",
         "theme_enable_desc",
         "theme_enabled",
+        true,
         true
     );
     settingsContainer.appendChild(enableRow);
 
     // Auto Accept Toggle
-    const autoAcceptRow = createToggleRow(
+    const autoAcceptRow = createCheckboxRow(
         "auto_accept",
         "auto_accept_desc",
         "auto_accept",
+        false,
         false
     );
     settingsContainer.appendChild(autoAcceptRow);
 
     // Hide TFT Toggle
-    const hideTftRow = createToggleRow(
+    const hideTftRow = createCheckboxRow(
         "hide_tft",
         "hide_tft_desc",
         "hide_tft",
-        true
+        true,
+        false
     );
     settingsContainer.appendChild(hideTftRow);
 
     container.appendChild(settingsContainer);
 }
 
-function createToggleRow(titleKey: string, descKey: string, dataKey: string, defaultValue: boolean): HTMLElement {
+function createCheckboxRow(
+    titleKey: string,
+    descKey: string,
+    dataKey: string,
+    defaultValue: boolean,
+    isTop: boolean
+): HTMLElement {
+    // Create row container
     const row = document.createElement("div");
-    row.style.cssText = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;";
+    row.className = isTop ? "lol-settings-chat-row-top" : "lol-settings-chat-row";
 
-    const labelContainer = document.createElement("div");
-    labelContainer.style.cssText = "flex: 1;";
-
-    const title = document.createElement("div");
-    title.style.cssText = "font-size: 14px; font-weight: bold; color: #f0f0f0;";
-    title.textContent = getStringSync(titleKey);
-
-    const desc = document.createElement("div");
-    desc.style.cssText = "font-size: 12px; color: #a0a0a0; margin-top: 4px;";
-    desc.textContent = getStringSync(descKey);
-
-    labelContainer.appendChild(title);
-    labelContainer.appendChild(desc);
-
-    const toggle = document.createElement("lol-uikit-flat-button");
-    toggle.style.cssText = "width: 60px; height: 30px;";
+    // Create checkbox component
+    const checkbox = document.createElement("lol-uikit-flat-checkbox");
+    checkbox.setAttribute("for", dataKey);
 
     const isEnabled = ElainaData.get(dataKey, defaultValue);
-    toggle.textContent = isEnabled ? "ON" : "OFF";
-    toggle.style.background = isEnabled ? "#46a827" : "#c84545";
+    if (isEnabled) {
+        checkbox.classList.add("checked");
+    }
 
-    toggle.addEventListener("click", () => {
-        const currentValue = ElainaData.get(dataKey, defaultValue);
-        ElainaData.set(dataKey, !currentValue);
-        toggle.textContent = !currentValue ? "ON" : "OFF";
-        toggle.style.background = !currentValue ? "#46a827" : "#c84545";
+    // Create input element
+    const input = document.createElement("input");
+    input.slot = "input";
+    input.name = dataKey;
+    input.type = "checkbox";
+    input.id = dataKey;
+    input.checked = isEnabled;
+    input.classList.add("ember-checkbox", "ember-view");
+
+    // Create label element
+    const label = document.createElement("label");
+    label.slot = "label";
+    label.className = "lol-settings-chat-label";
+    label.textContent = getStringSync(titleKey);
+
+    // Add change listener
+    input.addEventListener("change", () => {
+        const newValue = input.checked;
+        ElainaData.set(dataKey, newValue);
+
+        // Update checkbox class
+        if (newValue) {
+            checkbox.classList.add("checked");
+        } else {
+            checkbox.classList.remove("checked");
+        }
 
         // Show restart message for settings that require reload
         if (dataKey === "theme_enabled" || dataKey === "hide_tft") {
@@ -76,8 +95,10 @@ function createToggleRow(titleKey: string, descKey: string, dataKey: string, def
         }
     });
 
-    row.appendChild(labelContainer);
-    row.appendChild(toggle);
+    // Assemble component
+    checkbox.appendChild(input);
+    checkbox.appendChild(label);
+    row.appendChild(checkbox);
 
     return row;
 }
