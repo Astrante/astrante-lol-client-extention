@@ -9,49 +9,58 @@ export async function themeSettings(container: any) {
     const settingsContainer = document.createElement("div");
     settingsContainer.className = "lol-settings-options";
 
-    // Theme Enable Toggle (top row)
+    // Create scrollable wrapper
+    const scrollable = document.createElement("lol-uikit-scrollable");
+    scrollable.setAttribute("overflow-masks", "enabled");
+    scrollable.setAttribute("scrolled-bottom", "false");
+    scrollable.setAttribute("scrolled-top", "true");
+
+    // Add section title
+    const sectionTitle = document.createElement("div");
+    sectionTitle.className = "lol-settings-general-section-title";
+    sectionTitle.textContent = "SIMPLE THEME";
+    scrollable.appendChild(sectionTitle);
+
+    // Theme Enable Toggle (requires restart)
     const enableRow = createCheckboxRow(
         "theme_enable",
-        "theme_enable_desc",
         "theme_enabled",
         true,
-        true
+        "Requires client restart"
     );
-    settingsContainer.appendChild(enableRow);
+    scrollable.appendChild(enableRow);
+
+    // Hide TFT Toggle (requires restart)
+    const hideTftRow = createCheckboxRow(
+        "hide_tft",
+        "hide_tft",
+        true,
+        "Requires client restart"
+    );
+    scrollable.appendChild(hideTftRow);
 
     // Auto Accept Toggle
     const autoAcceptRow = createCheckboxRow(
         "auto_accept",
-        "auto_accept_desc",
         "auto_accept",
         false,
-        false
+        null
     );
-    settingsContainer.appendChild(autoAcceptRow);
+    scrollable.appendChild(autoAcceptRow);
 
-    // Hide TFT Toggle
-    const hideTftRow = createCheckboxRow(
-        "hide_tft",
-        "hide_tft_desc",
-        "hide_tft",
-        true,
-        false
-    );
-    settingsContainer.appendChild(hideTftRow);
-
+    settingsContainer.appendChild(scrollable);
     container.appendChild(settingsContainer);
 }
 
 function createCheckboxRow(
     titleKey: string,
-    descKey: string,
     dataKey: string,
     defaultValue: boolean,
-    isTop: boolean
+    subtitle: string | null
 ): HTMLElement {
     // Create row container
     const row = document.createElement("div");
-    row.className = isTop ? "lol-settings-chat-row-top" : "lol-settings-chat-row";
+    row.className = "lol-settings-general-row";
 
     // Create checkbox component
     const checkbox = document.createElement("lol-uikit-flat-checkbox");
@@ -74,7 +83,6 @@ function createCheckboxRow(
     // Create label element
     const label = document.createElement("label");
     label.slot = "label";
-    label.className = "lol-settings-chat-label";
     label.textContent = getStringSync(titleKey);
 
     // Add change listener
@@ -88,17 +96,20 @@ function createCheckboxRow(
         } else {
             checkbox.classList.remove("checked");
         }
-
-        // Show restart message for settings that require reload
-        if (dataKey === "theme_enabled" || dataKey === "hide_tft") {
-            alert("Please restart the client for changes to take effect.");
-        }
     });
 
-    // Assemble component
+    // Assemble checkbox component
     checkbox.appendChild(input);
     checkbox.appendChild(label);
     row.appendChild(checkbox);
+
+    // Add subtitle if provided
+    if (subtitle) {
+        const subtitleElement = document.createElement("p");
+        subtitleElement.className = "lol-settings-general-subtitle";
+        subtitleElement.textContent = subtitle;
+        row.appendChild(subtitleElement);
+    }
 
     return row;
 }
