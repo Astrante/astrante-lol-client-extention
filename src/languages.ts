@@ -3,13 +3,16 @@
  * @description Language system for Simple Theme
  */
 
+import { getThemeName } from "./otherThings.js";
+
 /**
  * Imports a locale file for the specified language code.
  * @param langCode The language code to import the locale for.
  * @returns The imported locale object.
  */
 async function importLocale(langCode: string): Promise<Object> {
-    const module = await import(`//plugins/simple-theme/locales/${langCode}.js`);
+    const themeName = getThemeName() || 'simpletheme';
+    const module = await import(`//plugins/${themeName}/locales/${langCode}.js`);
     return module.default;
 }
 

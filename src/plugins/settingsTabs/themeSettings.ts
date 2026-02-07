@@ -4,6 +4,8 @@
  */
 
 export async function themeSettings(container: any) {
+    console.log('[SimpleTheme] themeSettings called!', container);
+
     const settingsContainer = document.createElement("div");
     settingsContainer.style.cssText = "padding: 20px;";
 
@@ -24,6 +26,15 @@ export async function themeSettings(container: any) {
         false
     );
     settingsContainer.appendChild(autoAcceptRow);
+
+    // Hide TFT Toggle
+    const hideTftRow = createToggleRow(
+        "hide_tft",
+        "hide_tft_desc",
+        "hide_tft",
+        true
+    );
+    settingsContainer.appendChild(hideTftRow);
 
     container.appendChild(settingsContainer);
 }
@@ -59,8 +70,8 @@ function createToggleRow(titleKey: string, descKey: string, dataKey: string, def
         toggle.textContent = !currentValue ? "ON" : "OFF";
         toggle.style.background = !currentValue ? "#46a827" : "#c84545";
 
-        // If theme was toggled, show restart message
-        if (dataKey === "theme_enabled") {
+        // Show restart message for settings that require reload
+        if (dataKey === "theme_enabled" || dataKey === "hide_tft") {
             alert("Please restart the client for changes to take effect.");
         }
     });
@@ -78,6 +89,8 @@ function getStringSync(key: string): string {
         "theme_enable_desc": "Enable or disable the Simple Theme",
         "auto_accept": "Auto Accept",
         "auto_accept_desc": "Automatically accept match making queue",
+        "hide_tft": "Hide TFT Tab",
+        "hide_tft_desc": "Hide the Teamfight Tactics tab from the navigation",
     };
     return strings[key] || key;
 }
