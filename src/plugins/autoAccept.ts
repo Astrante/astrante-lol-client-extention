@@ -4,7 +4,8 @@
  */
 
 import utils from '../utils/utils.ts';
-import * as upl from "pengu-upl"
+import * as upl from "pengu-upl";
+import getString from "../languages.js";
 
 let queue_accepted: boolean = false
 let player_declined: boolean = false

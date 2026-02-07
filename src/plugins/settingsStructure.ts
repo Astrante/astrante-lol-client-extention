@@ -1,6 +1,6 @@
 export default [
     {
-        "groupName": 'simple-theme',
+        "groupName": 'simpletheme',
         "titleKey": 'el_title',
         "titleName": 'Simple Theme',
         "capitalTitleKey": 'el_title_capital',

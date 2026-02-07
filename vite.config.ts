@@ -39,7 +39,7 @@ export default defineConfig((config) => ({
             output: {
                 format: 'esm',
                 entryFileNames: 'index.js',
-                manualChunks: undefined,
+                inlineDynamicImports: true,     // Bundle everything into one file
                 assetFileNames(name) {
                     if (name.name === 'style.css')
                         return 'index.css';

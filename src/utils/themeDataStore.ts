@@ -1,3 +1,5 @@
+import defaultSettings from "../config/datastoreDefault.js";
+
 const ElainaData = {
     /**
      * Gets a value from the datastore.
@@ -6,8 +8,8 @@ const ElainaData = {
      * @returns The value associated with the key or the fallback.
      */
     get (key: string, fallback = null) {
-        const data: Object = window.DataStore.get("SimpleTheme", {})
-        return data.hasOwnProperty(key) ? data[key] : fallback;
+        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings)
+        return data.hasOwnProperty(key) ? data[key] : (defaultSettings[key] ?? fallback);
     },
 
     /**
@@ -17,13 +19,10 @@ const ElainaData = {
      * @returns True if the key was set successfully, false otherwise.
      */
     set (key: string, value: any) {
-        const data: Object = window.DataStore.get("SimpleTheme", {})
+        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings)
         data[key] = value
         window.DataStore.set("SimpleTheme", data)
-        if (data.hasOwnProperty(key)) {
-            return true;
-        }
-        return false;
+        return true;
     },
 
     /**
@@ -32,17 +31,17 @@ const ElainaData = {
      * @returns True if the key exists, false otherwise.
      */
     has (key: string) {
-        const data: Object = window.DataStore.get("SimpleTheme", {});
+        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings);
         return data.hasOwnProperty(key);
     },
 
     /**
-     * Removes a key from the datastore.
+     * Removes a key from the datastore and restores its default value.
      * @param key The key to remove.
      * @returns True if the key was removed, false otherwise.
      */
     remove (key: string) {
-        const data: Object = window.DataStore.get("SimpleTheme", {});
+        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings);
         if (data.hasOwnProperty(key)) {
             delete data[key];
             window.DataStore.set("SimpleTheme", data);
@@ -55,7 +54,7 @@ const ElainaData = {
      * Restores the default values of the theme in the datastore.
      */
     restoreDefaults () {
-        window.DataStore.set("SimpleTheme", {});
+        window.DataStore.set("SimpleTheme", { ...defaultSettings });
         window.reloadClient()
     }
 };
