@@ -53,12 +53,6 @@ export async function themeSettings(container: any) {
     notice.appendChild(restartButton);
     generalSection.appendChild(notice);
 
-    // Initialize baseline on first load (if not exists)
-    initializeBaseline();
-
-    // Check for changes on load
-    updateRestartButtonState(restartButton, checkForChanges());
-
     // CLIENT section
     const clientSection = document.createElement("div");
 
@@ -132,29 +126,89 @@ export async function themeSettings(container: any) {
     tftSection.appendChild(tftSubSection);
     generalSection.appendChild(tftSection);
 
-    // Handle master toggle logic
+    // Get checkbox elements for master toggle logic
+    const themeEnableInput = enableRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftInput = hideTftRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftModeInput = hideTftModeRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftTabInput = hideTftTabRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
 
-    // Initialize state based on master toggle
+    // Collect all rows that should be controlled by theme enable toggle
+    const controlledRows = [
+        autoAcceptRow,
+        hideTftRow,
+        hideTftModeRow,
+        hideTftTabRow
+    ];
+
+    // Initialize baseline on first load (if not exists)
+    initializeBaseline();
+
+    // Initialize TFT sub-settings state first
     updateTftSubSettings();
 
+    // Then initialize state based on theme enable toggle
+    updateAllSettingsState();
+
+    // Check for changes on load
+    updateRestartButtonState(restartButton, checkForChanges());
+
+    // Theme enable toggle listener
+    themeEnableInput.addEventListener("change", () => {
+        updateAllSettingsState();
+    });
+
+    // Hide TFT master toggle listener
     hideTftInput.addEventListener("change", () => {
         updateTftSubSettings();
     });
 
-    function updateTftSubSettings() {
-        const isMasterEnabled = hideTftInput.checked;
+    function updateAllSettingsState() {
+        const isThemeEnabled = themeEnableInput.checked;
 
-        // Enable/disable sub-options visually (don't change their actual values)
-        hideTftModeInput.disabled = !isMasterEnabled;
-        hideTftTabInput.disabled = !isMasterEnabled;
+        // Enable/disable all controlled settings visually
+        controlledRows.forEach(row => {
+            const input = row.querySelector('input[type="checkbox"]') as HTMLInputElement;
+            const rowElement = row as HTMLElement;
+
+            if (!isThemeEnabled) {
+                // Theme disabled - disable all controlled settings
+                if (input) {
+                    input.disabled = true;
+                }
+                rowElement.style.opacity = "0.5";
+                rowElement.style.pointerEvents = "none";
+            } else {
+                // Theme enabled - enable all controlled settings
+                if (input) {
+                    input.disabled = false;
+                }
+                rowElement.style.opacity = "1";
+                rowElement.style.pointerEvents = "auto";
+            }
+        });
+
+        // After theme enable state, let TFT toggle control its sub-settings
+        updateTftSubSettings();
+
+        // Check for changes and update restart button
+        const hasChanges = checkForChanges();
+        updateRestartButtonState(restartButton, hasChanges);
+    }
+
+    function updateTftSubSettings() {
+        // Check BOTH theme enable AND hide TFT toggle
+        const isThemeEnabled = themeEnableInput.checked;
+        const isMasterEnabled = hideTftInput.checked;
+        const shouldEnable = isThemeEnabled && isMasterEnabled;
+
+        // Enable/disable sub-options based on BOTH conditions
+        hideTftModeInput.disabled = !shouldEnable;
+        hideTftTabInput.disabled = !shouldEnable;
 
         // Update visual state
         [hideTftModeRow, hideTftTabRow].forEach(row => {
             const checkbox = row as HTMLElement;
-            if (!isMasterEnabled) {
+            if (!shouldEnable) {
                 checkbox.style.opacity = "0.5";
                 checkbox.style.pointerEvents = "none";
             } else {
