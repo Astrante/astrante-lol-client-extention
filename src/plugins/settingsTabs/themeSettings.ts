@@ -15,16 +15,36 @@ export async function themeSettings(container: any) {
     sectionTitle.textContent = "ASTRANTE THEME";
     generalSection.appendChild(sectionTitle);
 
-    // Restart notice
+    // Restart notice with button
     const notice = document.createElement("div");
     notice.className = "lol-settings-generic-notice";
-    notice.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0;">
-            <p style="margin: 0; color: #f0e6d2; font-size: 13px;">
-                Some changes require a client restart to take effect.
-            </p>
-        </div>
-    `;
+    notice.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;";
+
+    // Notice text (gold color)
+    const noticeText = document.createElement("p");
+    noticeText.style.cssText = "margin: 0; color: #cdbe91; font-size: 13px; flex: 1;";
+    noticeText.textContent = "Some changes require a client restart to take effect.";
+    notice.appendChild(noticeText);
+
+    // Restart button (gold, positioned to the right)
+    const restartButton = document.createElement("lol-uikit-flat-button");
+    restartButton.setAttribute("primary", "true");
+    restartButton.textContent = "Restart Client";
+
+    restartButton.addEventListener("click", async () => {
+        try {
+            await fetch('/lol-login/v1/session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            await fetch('/riotclient/kill-and-restart-ux', { method: 'POST' });
+        } catch (error) {
+            console.error('[AstranteTheme] Failed to restart client:', error);
+        }
+    });
+
+    notice.appendChild(restartButton);
     generalSection.appendChild(notice);
 
     // Theme Enable Toggle
@@ -50,32 +70,6 @@ export async function themeSettings(container: any) {
         false
     );
     generalSection.appendChild(autoAcceptRow);
-
-    // Action buttons section
-    const actionsDiv = document.createElement("div");
-    actionsDiv.className = "lol-settings-general-actions";
-    actionsDiv.style.cssText = "margin-top: 24px;";
-
-    // Restart button - gold secondary button (with primary attribute)
-    const restartButton = document.createElement("lol-uikit-flat-button");
-    restartButton.setAttribute("primary", "true");
-    restartButton.textContent = "Restart Client";
-
-    restartButton.addEventListener("click", async () => {
-        try {
-            await fetch('/lol-login/v1/session', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({})
-            });
-            await fetch('/riotclient/kill-and-restart-ux', { method: 'POST' });
-        } catch (error) {
-            console.error('[AstranteTheme] Failed to restart client:', error);
-        }
-    });
-
-    actionsDiv.appendChild(restartButton);
-    generalSection.appendChild(actionsDiv);
 
     container.appendChild(generalSection);
 }
