@@ -6,25 +6,17 @@
 export async function themeSettings(container: any) {
     console.log('[SimpleTheme] themeSettings called!', container);
 
-    const settingsContainer = document.createElement("div");
-    settingsContainer.className = "lol-settings-options";
-
-    // Create scrollable wrapper
-    const scrollable = document.createElement("lol-uikit-scrollable");
-    scrollable.style.height = "100%";
-    scrollable.style.overflowY = "auto";
-
     // Add section title
     const sectionTitle = document.createElement("div");
     sectionTitle.className = "lol-settings-general-section-title";
     sectionTitle.textContent = "ASTRANTE THEME";
-    scrollable.appendChild(sectionTitle);
+    container.appendChild(sectionTitle);
 
     // Add restart notice
     const restartNotice = document.createElement("p");
     restartNotice.className = "lol-settings-general-subtitle";
     restartNotice.textContent = "Requires client restart";
-    scrollable.appendChild(restartNotice);
+    container.appendChild(restartNotice);
 
     // Theme Enable Toggle
     const enableRow = createCheckboxRow(
@@ -32,7 +24,7 @@ export async function themeSettings(container: any) {
         "theme_enabled",
         true
     );
-    scrollable.appendChild(enableRow);
+    container.appendChild(enableRow);
 
     // Hide TFT Toggle
     const hideTftRow = createCheckboxRow(
@@ -40,7 +32,7 @@ export async function themeSettings(container: any) {
         "hide_tft",
         true
     );
-    scrollable.appendChild(hideTftRow);
+    container.appendChild(hideTftRow);
 
     // Auto Accept Toggle
     const autoAcceptRow = createCheckboxRow(
@@ -48,10 +40,7 @@ export async function themeSettings(container: any) {
         "auto_accept",
         false
     );
-    scrollable.appendChild(autoAcceptRow);
-
-    settingsContainer.appendChild(scrollable);
-    container.appendChild(settingsContainer);
+    container.appendChild(autoAcceptRow);
 }
 
 function createCheckboxRow(
