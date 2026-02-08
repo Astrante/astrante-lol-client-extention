@@ -3,6 +3,15 @@
  * @description Theme Settings tab for Astrante Theme
  */
 
+// Settings keys that we track for changes
+const TRACKED_SETTINGS = [
+    "theme_enabled",
+    "auto_accept",
+    "hide_tft",
+    "hide_tft_mode",
+    "hide_tft_tab"
+];
+
 export async function themeSettings(container: any) {
 
     // General settings section
@@ -20,13 +29,16 @@ export async function themeSettings(container: any) {
     noticeText.textContent = "Some changes require a client restart to take effect.";
     notice.appendChild(noticeText);
 
-    // Restart button (gold, positioned to the right)
+    // Restart button (normal by default, gold when there are changes)
     const restartButton = document.createElement("lol-uikit-flat-button");
-    restartButton.setAttribute("primary", "true");
-    restartButton.textContent = "Restart Client";
+    restartButton.textContent = "Restart";
 
     restartButton.addEventListener("click", async () => {
         try {
+            // Save current state as new baseline before restart
+            saveCurrentStateAsBaseline();
+            updateRestartButtonState(restartButton, false);
+
             await fetch('/lol-login/v1/session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -41,6 +53,12 @@ export async function themeSettings(container: any) {
     notice.appendChild(restartButton);
     generalSection.appendChild(notice);
 
+    // Initialize baseline on first load (if not exists)
+    initializeBaseline();
+
+    // Check for changes on load
+    updateRestartButtonState(restartButton, checkForChanges());
+
     // CLIENT section
     const clientSection = document.createElement("div");
 
@@ -52,6 +70,7 @@ export async function themeSettings(container: any) {
 
     // Theme Enable Toggle
     const enableRow = createCheckboxRow(
+        restartButton,
         "theme_enable",
         "theme_enabled",
         true
@@ -60,6 +79,7 @@ export async function themeSettings(container: any) {
 
     // Auto Accept Toggle
     const autoAcceptRow = createCheckboxRow(
+        restartButton,
         "auto_accept",
         "auto_accept",
         false
@@ -79,6 +99,7 @@ export async function themeSettings(container: any) {
 
     // Hide TFT Master Toggle
     const hideTftRow = createCheckboxRow(
+        restartButton,
         "hide_tft",
         "hide_tft",
         false
@@ -92,6 +113,7 @@ export async function themeSettings(container: any) {
 
     // Hide TFT Mode Toggle
     const hideTftModeRow = createCheckboxRow(
+        restartButton,
         "hide_tft_mode",
         "hide_tft_mode",
         true
@@ -100,6 +122,7 @@ export async function themeSettings(container: any) {
 
     // Hide TFT Tab Toggle
     const hideTftTabRow = createCheckboxRow(
+        restartButton,
         "hide_tft_tab",
         "hide_tft_tab",
         true
@@ -139,12 +162,17 @@ export async function themeSettings(container: any) {
                 checkbox.style.pointerEvents = "auto";
             }
         });
+
+        // Check for changes and update restart button
+        const hasChanges = checkForChanges();
+        updateRestartButtonState(restartButton, hasChanges);
     }
 
     container.appendChild(generalSection);
 }
 
 function createCheckboxRow(
+    restartButton: any,
     titleKey: string,
     dataKey: string,
     defaultValue: boolean
@@ -186,6 +214,10 @@ function createCheckboxRow(
             checkbox.classList.remove("checked");
         }
 
+        // Check for changes and update restart button
+        const hasChanges = checkForChanges();
+        updateRestartButtonState(restartButton, hasChanges);
+
         // Trigger settings change notification
         const changeNumber = ElainaData.get("settingsChangenumber", 0);
         ElainaData.set("settingsChangenumber", changeNumber + 1);
@@ -213,4 +245,72 @@ function getStringSync(key: string): string {
         "hide_tft_tab_desc": "Hide TFT navigation tab",
     };
     return strings[key] || key;
+}
+
+/**
+ * Get current settings values as an object
+ */
+function getCurrentSettings(): { [key: string]: boolean } {
+    const settings: { [key: string]: boolean } = {};
+    TRACKED_SETTINGS.forEach(key => {
+        settings[key] = ElainaData.get(key, false);
+    });
+    return settings;
+}
+
+/**
+ * Initialize baseline if it doesn't exist
+ */
+function initializeBaseline() {
+    const baseline = ElainaData.get("settings_baseline", null);
+    if (!baseline) {
+        saveCurrentStateAsBaseline();
+    }
+}
+
+/**
+ * Save current settings as baseline
+ */
+function saveCurrentStateAsBaseline() {
+    const currentSettings = getCurrentSettings();
+    ElainaData.set("settings_baseline", JSON.stringify(currentSettings));
+}
+
+/**
+ * Check if current settings differ from baseline
+ */
+function checkForChanges(): boolean {
+    const baselineStr = ElainaData.get("settings_baseline", null);
+    if (!baselineStr) return false;
+
+    try {
+        const baseline = JSON.parse(baselineStr) as { [key: string]: boolean };
+        const current = getCurrentSettings();
+
+        // Compare each setting
+        for (const key of TRACKED_SETTINGS) {
+            if (baseline[key] !== current[key]) {
+                return true; // Found a difference
+            }
+        }
+        return false; // No differences
+    } catch (error) {
+        console.error('[AstranteTheme] Error parsing baseline:', error);
+        return false;
+    }
+}
+
+/**
+ * Update restart button visual state
+ * @param button - The restart button element
+ * @param hasChanges - true to make button gold (primary), false for normal
+ */
+function updateRestartButtonState(button: any, hasChanges: boolean) {
+    if (button) {
+        if (hasChanges) {
+            button.setAttribute("primary", "true");
+        } else {
+            button.removeAttribute("primary");
+        }
+    }
 }
