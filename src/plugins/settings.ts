@@ -1,6 +1,6 @@
 /**
- * @author Simple
- * @description Settings system for Simple Theme (based on ElainaV4 approach)
+ * @author Astrante
+ * @description Settings system for Astrante Theme (based on ElainaV4 approach)
  */
 
 import structure from "./settingsStructure.ts"
@@ -14,16 +14,12 @@ ElainaData.set("settingsChangenumber", 0)
  * Based on ElainaV4's implementation
  */
 function settingsUtils(context: any, groupDataArray: any[]) {
-    console.log('[SimpleTheme] Loaded settings utils');
-
     // Hook into rcp-fe-lol-settings to register settings categories
     context.rcp.postInit('rcp-fe-lol-settings', async (api: any) => {
-        console.log('[SimpleTheme] Loaded rcp-fe-lol-settings for SimpleTheme settings');
         (window as any).__RCP_SETTINGS_API = api;
 
         const emberApi = (window as any).__RCP_EMBER_API;
         if (!emberApi) {
-            console.warn('[SimpleTheme] Ember API not available yet');
             return;
         }
 
@@ -65,7 +61,6 @@ function settingsUtils(context: any, groupDataArray: any[]) {
 
     // Hook into rcp-fe-ember-libs to add routes for settings pages
     context.rcp.postInit('rcp-fe-ember-libs', async (api: any) => {
-        console.log('[SimpleTheme] Loaded rcp-fe-ember-libs for SimpleTheme settings');
         (window as any).__RCP_EMBER_API = api;
 
         const ember = await api.getEmber();
@@ -89,7 +84,6 @@ function settingsUtils(context: any, groupDataArray: any[]) {
 
     // Hook into rcp-fe-lol-l10n to provide translations
     context.rcp.postInit('rcp-fe-lol-l10n', async (api: any) => {
-        console.log('[SimpleTheme] Loaded rcp-fe-lol-l10n for SimpleTheme settings');
 
         const tra = api.tra();
         const originalGet = tra.__proto__.get;
@@ -117,7 +111,6 @@ function settingsUtils(context: any, groupDataArray: any[]) {
 
     // Hook into rcp-fe-ember-libs again to create templates
     context.rcp.postInit('rcp-fe-ember-libs', async (api: any) => {
-        console.log('[SimpleTheme] Loaded rcp-fe-ember-libs for template creation');
 
         const ember = await api.getEmber();
         const factory = await api.getEmberApplicationFactory();
@@ -179,20 +172,16 @@ function settingsUtils(context: any, groupDataArray: any[]) {
 
 // Set up mutation observer to inject settings UI when tabs are opened
 window.addEventListener('load', async () => {
-    console.log('[SimpleTheme] Window loaded, setting up settings observers');
-
     // Wait for the document to be ready
     const interval = setInterval(() => {
         const manager = document.getElementById('lol-uikit-layer-manager-wrapper');
         if (manager) {
-            console.log('[SimpleTheme] Manager found, setting up MutationObserver');
             clearInterval(interval);
 
-            new MutationObserver((mutations) => {
-                for (const elementClass of ['theme_settings', 'simple-theme-settings']) {
+            new MutationObserver(() => {
+                for (const elementClass of ['theme_settings', 'astrante-theme-settings']) {
                     const theme = document.querySelector(`lol-uikit-scrollable.${elementClass}`);
                     if (theme && !theme.hasChildNodes()) {
-                        console.log('[SimpleTheme] Theme settings detected, injecting UI:', elementClass, theme);
                         themeSettings(theme);
                     }
                 }
@@ -206,6 +195,5 @@ window.addEventListener('load', async () => {
 
 // Export the Settings function
 export function Settings(context: any) {
-    console.log('[SimpleTheme] Settings called with context:', context);
     settingsUtils(context, structure);
 }

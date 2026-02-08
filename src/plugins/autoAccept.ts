@@ -1,6 +1,6 @@
 /**
  * @author Lyfhael
- * @modifier Simple
+ * @modifier Astrante
  */
 
 import utils from '../utils/utils.ts';

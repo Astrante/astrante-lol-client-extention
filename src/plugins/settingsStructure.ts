@@ -1,17 +1,17 @@
 export default [
     {
-        "groupName": 'simpletheme',
+        "groupName": 'astrantetheme',
         "titleKey": 'el_title',
-        "titleName": 'Simple Theme',
+        "titleName": 'Astrante Theme',
         "capitalTitleKey": 'el_title_capital',
-        "capitalTitleName": 'SIMPLE THEME',
+        "capitalTitleName": 'ASTRANTE THEME',
         "element": [
             {
-                "name": "simple-theme-settings",
+                "name": "astrante-theme-settings",
                 "title": "el_theme-settings",
                 "titleName": "THEME SETTINGS",
                 "class": "theme_settings",
-                "id": "SimpleThemeSettings",
+                "id": "AstranteThemeSettings",
             },
         ],
     },
