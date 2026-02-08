@@ -34,11 +34,16 @@ class SimpleTheme {
         const autoAccept = new AutoAccept();
         autoAccept.main(true);
 
-        // Hide TFT tab
-        if (ElainaData.get("hide_tft", false)) {
+        // Hide TFT tab and/or mode
+        const hideTft = ElainaData.get("hide_tft", false);
+        const hideTftMode = ElainaData.get("hide_tft_mode", false);
+        const hideTftTab = ElainaData.get("hide_tft_tab", false);
+
+        // Only load plugin if master is enabled AND at least one sub-option is active
+        if (hideTft && (hideTftMode || hideTftTab)) {
             const { HideTft } = await import("./plugins/hideTft.ts");
-            const hideTft = new HideTft();
-            hideTft.main();
+            const hideTftPlugin = new HideTft();
+            hideTftPlugin.main();
         }
     }
 }

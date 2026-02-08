@@ -9,16 +9,10 @@ export async function themeSettings(container: any) {
     const generalSection = document.createElement("div");
     generalSection.className = "lol-settings-general-section";
 
-    // Section title
-    const sectionTitle = document.createElement("div");
-    sectionTitle.className = "lol-settings-general-section-title";
-    sectionTitle.textContent = "ASTRANTE THEME";
-    generalSection.appendChild(sectionTitle);
-
     // Restart notice with button
     const notice = document.createElement("div");
     notice.className = "lol-settings-generic-notice";
-    notice.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;";
+    notice.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px;";
 
     // Notice text (gold color)
     const noticeText = document.createElement("p");
@@ -47,21 +41,22 @@ export async function themeSettings(container: any) {
     notice.appendChild(restartButton);
     generalSection.appendChild(notice);
 
+    // CLIENT section
+    const clientSection = document.createElement("div");
+
+    const clientTitle = document.createElement("div");
+    clientTitle.className = "lol-settings-client-section-title";
+    clientTitle.style.cssText = "font-size: 14px; font-weight: 700; color: #f0e6d2; letter-spacing: 1px; margin-bottom: 12px;";
+    clientTitle.textContent = "CLIENT";
+    clientSection.appendChild(clientTitle);
+
     // Theme Enable Toggle
     const enableRow = createCheckboxRow(
         "theme_enable",
         "theme_enabled",
         true
     );
-    generalSection.appendChild(enableRow);
-
-    // Hide TFT Toggle
-    const hideTftRow = createCheckboxRow(
-        "hide_tft",
-        "hide_tft",
-        true
-    );
-    generalSection.appendChild(hideTftRow);
+    clientSection.appendChild(enableRow);
 
     // Auto Accept Toggle
     const autoAcceptRow = createCheckboxRow(
@@ -69,7 +64,82 @@ export async function themeSettings(container: any) {
         "auto_accept",
         false
     );
-    generalSection.appendChild(autoAcceptRow);
+    clientSection.appendChild(autoAcceptRow);
+
+    generalSection.appendChild(clientSection);
+
+    // TFT section
+    const tftSection = document.createElement("div");
+
+    const tftTitle = document.createElement("div");
+    tftTitle.className = "lol-settings-tft-section-title";
+    tftTitle.style.cssText = "font-size: 14px; font-weight: 700; color: #f0e6d2; letter-spacing: 1px; margin: 24px 0 12px 0;";
+    tftTitle.textContent = "TFT";
+    tftSection.appendChild(tftTitle);
+
+    // Hide TFT Master Toggle
+    const hideTftRow = createCheckboxRow(
+        "hide_tft",
+        "hide_tft",
+        false
+    );
+    tftSection.appendChild(hideTftRow);
+
+    // Indented sub-options container
+    const tftSubSection = document.createElement("div");
+    tftSubSection.className = "tft-sub-settings";
+    tftSubSection.style.cssText = "margin-left: 32px;";
+
+    // Hide TFT Mode Toggle
+    const hideTftModeRow = createCheckboxRow(
+        "hide_tft_mode",
+        "hide_tft_mode",
+        true
+    );
+    tftSubSection.appendChild(hideTftModeRow);
+
+    // Hide TFT Tab Toggle
+    const hideTftTabRow = createCheckboxRow(
+        "hide_tft_tab",
+        "hide_tft_tab",
+        true
+    );
+    tftSubSection.appendChild(hideTftTabRow);
+
+    tftSection.appendChild(tftSubSection);
+    generalSection.appendChild(tftSection);
+
+    // Handle master toggle logic
+    const hideTftInput = hideTftRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    const hideTftModeInput = hideTftModeRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    const hideTftTabInput = hideTftTabRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
+
+    // Initialize state based on master toggle
+    updateTftSubSettings();
+
+    hideTftInput.addEventListener("change", () => {
+        updateTftSubSettings();
+    });
+
+    function updateTftSubSettings() {
+        const isMasterEnabled = hideTftInput.checked;
+
+        // Enable/disable sub-options visually (don't change their actual values)
+        hideTftModeInput.disabled = !isMasterEnabled;
+        hideTftTabInput.disabled = !isMasterEnabled;
+
+        // Update visual state
+        [hideTftModeRow, hideTftTabRow].forEach(row => {
+            const checkbox = row as HTMLElement;
+            if (!isMasterEnabled) {
+                checkbox.style.opacity = "0.5";
+                checkbox.style.pointerEvents = "none";
+            } else {
+                checkbox.style.opacity = "1";
+                checkbox.style.pointerEvents = "auto";
+            }
+        });
+    }
 
     container.appendChild(generalSection);
 }
@@ -135,8 +205,12 @@ function getStringSync(key: string): string {
         "theme_enable_desc": "Enable or disable the Astrante Theme customization",
         "auto_accept": "Auto Accept Match",
         "auto_accept_desc": "Automatically accept when a match is found",
-        "hide_tft": "Hide TFT Tab",
-        "hide_tft_desc": "Hide the Teamfight Tactics tab from the navigation bar",
+        "hide_tft": "Hide TFT",
+        "hide_tft_desc": "Enable TFT hiding options (unlocks sub-options below)",
+        "hide_tft_mode": "Hide TFT Mode",
+        "hide_tft_mode_desc": "Hide TFT game card from Play mode selection",
+        "hide_tft_tab": "Hide TFT Tab",
+        "hide_tft_tab_desc": "Hide TFT navigation tab",
     };
     return strings[key] || key;
 }
