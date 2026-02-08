@@ -11,9 +11,6 @@ export async function themeSettings(container: any) {
 
     // Create scrollable wrapper
     const scrollable = document.createElement("lol-uikit-scrollable");
-    scrollable.setAttribute("overflow-masks", "enabled");
-    scrollable.setAttribute("scrolled-bottom", "false");
-    scrollable.setAttribute("scrolled-top", "true");
 
     // Add section title
     const sectionTitle = document.createElement("div");
