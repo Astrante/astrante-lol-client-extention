@@ -101,8 +101,8 @@ const AstranteData = {
      * @returns The value associated with the key or the fallback.
      */
     get (key: string, fallback = null) {
-        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings)
-        return data.hasOwnProperty(key) ? data[key] : (defaultSettings[key] ?? fallback);
+        const data = window.DataStore.get("AstranteTheme", defaultSettings) as Record<string, any>;
+        return key in data ? data[key] : (defaultSettings[key] ?? fallback);
     },
 
     /**
@@ -112,9 +112,9 @@ const AstranteData = {
      * @returns True if the key was set successfully, false otherwise.
      */
     set (key: string, value: any) {
-        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings)
-        data[key] = value
-        window.DataStore.set("AstranteTheme", data)
+        const data = window.DataStore.get("AstranteTheme", defaultSettings) as Record<string, any>;
+        data[key] = value;
+        window.DataStore.set("AstranteTheme", data);
         return true;
     },
 
@@ -124,8 +124,8 @@ const AstranteData = {
      * @returns True if the key exists, false otherwise.
      */
     has (key: string) {
-        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings);
-        return data.hasOwnProperty(key);
+        const data = window.DataStore.get("AstranteTheme", defaultSettings) as Record<string, any>;
+        return key in data;
     },
 
     /**
@@ -134,8 +134,8 @@ const AstranteData = {
      * @returns True if the key was removed, false otherwise.
      */
     remove (key: string) {
-        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings);
-        if (data.hasOwnProperty(key)) {
+        const data = window.DataStore.get("AstranteTheme", defaultSettings) as Record<string, any>;
+        if (key in data) {
             delete data[key];
             window.DataStore.set("AstranteTheme", data);
             return true;

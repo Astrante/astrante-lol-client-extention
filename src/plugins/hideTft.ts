@@ -4,6 +4,7 @@
 
 export class HideTft {
     private styleElement?: HTMLStyleElement;
+    private spacerObserver?: MutationObserver;
 
     async main(utils: any) {
         // Build CSS based on settings (recursive tree checking)
@@ -66,8 +67,8 @@ export class HideTft {
 
             // Try immediately and also observe for changes
             addSpacer();
-            const observer = new MutationObserver(() => addSpacer());
-            observer.observe(document.body, { childList: true, subtree: true });
+            this.spacerObserver = new MutationObserver(() => addSpacer());
+            this.spacerObserver.observe(document.body, { childList: true, subtree: true });
         }
 
         // Only add style element if there's CSS to apply
@@ -77,6 +78,10 @@ export class HideTft {
     }
 
     destroy() {
+        if (this.spacerObserver) {
+            this.spacerObserver.disconnect();
+            this.spacerObserver = undefined;
+        }
         if (this.styleElement && this.styleElement.parentNode) {
             this.styleElement.parentNode.removeChild(this.styleElement);
         }

@@ -5,6 +5,7 @@
  */
 
 import { SETTINGS_TREE } from "../../utils/themeDataStore.js";
+import defaultLocale from "../../locales/default.js";
 
 // Settings keys that we track for changes
 const TRACKED_SETTINGS = Object.keys(SETTINGS_TREE);
@@ -13,6 +14,19 @@ const TRACKED_SETTINGS = Object.keys(SETTINGS_TREE);
 const checkboxElements: { [key: string]: HTMLInputElement } = {};
 // Store for row elements by key
 const rowElements: { [key: string]: HTMLElement } = {};
+
+/**
+ * Synchronous string retrieval using cached locale
+ * Falls back to key if translation not found (with logging)
+ */
+function getLocalizedString(key: string): string {
+    const value = defaultLocale[key];
+    if (value === undefined) {
+        console.warn(`[AstranteTheme] Missing translation key: ${key}`);
+        return key;
+    }
+    return value;
+}
 
 /**
  * Update the visual state (disabled/enabled) of a single setting row
@@ -67,6 +81,17 @@ function updateAllSettingsState(restartButton: any): void {
     }
 }
 
+/**
+ * Register checkbox and row elements to avoid code duplication
+ */
+function registerElements(dataKey: string, rowElement: HTMLElement): void {
+    const input = rowElement.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    if (input) {
+        checkboxElements[dataKey] = input;
+        rowElements[dataKey] = rowElement;
+    }
+}
+
 export async function themeSettings(container: any) {
 
     /**
@@ -104,7 +129,7 @@ export async function themeSettings(container: any) {
     infoText.textContent = "Changes in this tab require client restart";
 
     // Tooltip component
-    const tooltip = document.createElement("div");
+    const tooltip = document.createElement("div")
     tooltip.className = "lol-tooltip-component ember-view";
     tooltip.setAttribute("data-tooltip-dest", "general");
     tooltip.setAttribute("data-tooltip-tooltip", "Changes are saved automatically. You can modify settings and close - they will take effect on the next launch.");
@@ -136,23 +161,18 @@ export async function themeSettings(container: any) {
     clientTitle.textContent = "CLIENT";
     clientSection.appendChild(clientTitle);
 
-    // Theme Enable Toggle (root)
-    const enableRow = createCheckboxRow(
-        restartButton,
-        "theme_enable",
-        "theme_enabled",
-        true
-    );
-    clientSection.appendChild(enableRow);
+    // Define all settings with their properties
+    const settingsConfig = [
+        { titleKey: "theme_enable", dataKey: "theme_enabled", defaultValue: true },
+        { titleKey: "auto_accept", dataKey: "auto_accept", defaultValue: false },
+    ];
 
-    // Auto Accept Toggle
-    const autoAcceptRow = createCheckboxRow(
-        restartButton,
-        "auto_accept",
-        "auto_accept",
-        false
-    );
-    clientSection.appendChild(autoAcceptRow);
+    // Create CLIENT section checkboxes
+    settingsConfig.forEach(config => {
+        const row = createCheckboxRow(restartButton, config.titleKey, config.dataKey, config.defaultValue);
+        clientSection.appendChild(row);
+        registerElements(config.dataKey, row);
+    });
 
     generalSection.appendChild(clientSection);
 
@@ -166,70 +186,30 @@ export async function themeSettings(container: any) {
     tftSection.appendChild(tftTitle);
 
     // Hide TFT Master Toggle
-    const hideTftRow = createCheckboxRow(
-        restartButton,
-        "hide_tft",
-        "hide_tft",
-        false
-    );
+    const hideTftRow = createCheckboxRow(restartButton, "hide_tft", "hide_tft", false);
     tftSection.appendChild(hideTftRow);
+    registerElements("hide_tft", hideTftRow);
 
     // Indented sub-options container
     const tftSubSection = document.createElement("div");
     tftSubSection.className = "tft-sub-settings";
     tftSubSection.style.cssText = "margin-left: 32px;";
 
-    // Hide TFT Mode Toggle
-    const hideTftModeRow = createCheckboxRow(
-        restartButton,
-        "hide_tft_mode",
-        "hide_tft_mode",
-        true
-    );
-    tftSubSection.appendChild(hideTftModeRow);
+    // TFT sub-options
+    const tftSubSettings = [
+        { titleKey: "hide_tft_mode", dataKey: "hide_tft_mode", defaultValue: true },
+        { titleKey: "hide_tft_tab", dataKey: "hide_tft_tab", defaultValue: true },
+        { titleKey: "hide_tft_mission", dataKey: "hide_tft_mission", defaultValue: true },
+    ];
 
-    // Hide TFT Tab Toggle
-    const hideTftTabRow = createCheckboxRow(
-        restartButton,
-        "hide_tft_tab",
-        "hide_tft_tab",
-        true
-    );
-    tftSubSection.appendChild(hideTftTabRow);
-
-    // Hide TFT Mission Toggle
-    const hideTftMissionRow = createCheckboxRow(
-        restartButton,
-        "hide_tft_mission",
-        "hide_tft_mission",
-        true
-    );
-    tftSubSection.appendChild(hideTftMissionRow);
+    tftSubSettings.forEach(config => {
+        const row = createCheckboxRow(restartButton, config.titleKey, config.dataKey, config.defaultValue);
+        tftSubSection.appendChild(row);
+        registerElements(config.dataKey, row);
+    });
 
     tftSection.appendChild(tftSubSection);
     generalSection.appendChild(tftSection);
-
-    // Store references to inputs and rows
-    const themeEnableInput = enableRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
-    const autoAcceptInput = autoAcceptRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
-    const hideTftInput = hideTftRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
-    const hideTftModeInput = hideTftModeRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
-    const hideTftTabInput = hideTftTabRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
-    const hideTftMissionInput = hideTftMissionRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
-
-    checkboxElements["theme_enabled"] = themeEnableInput;
-    checkboxElements["auto_accept"] = autoAcceptInput;
-    checkboxElements["hide_tft"] = hideTftInput;
-    checkboxElements["hide_tft_mode"] = hideTftModeInput;
-    checkboxElements["hide_tft_tab"] = hideTftTabInput;
-    checkboxElements["hide_tft_mission"] = hideTftMissionInput;
-
-    rowElements["theme_enabled"] = enableRow;
-    rowElements["auto_accept"] = autoAcceptRow;
-    rowElements["hide_tft"] = hideTftRow;
-    rowElements["hide_tft_mode"] = hideTftModeRow;
-    rowElements["hide_tft_tab"] = hideTftTabRow;
-    rowElements["hide_tft_mission"] = hideTftMissionRow;
 
     // Initialize baseline on first load (if not exists)
     initializeBaseline();
@@ -276,11 +256,11 @@ function createCheckboxRow(
     input.checked = isEnabled;
     input.classList.add("ember-checkbox", "ember-view");
 
-    // Create label element
+    // Create label element with localized string
     const label = document.createElement("label");
     label.slot = "label";
     label.className = "lol-settings-checkbox-label";
-    label.textContent = getStringSync(titleKey);
+    label.textContent = getLocalizedString(titleKey);
 
     // Add change listener
     input.addEventListener("change", () => {
@@ -308,25 +288,6 @@ function createCheckboxRow(
     checkbox.appendChild(label);
 
     return checkbox;
-}
-
-function getStringSync(key: string): string {
-    // Localized strings following Riot's naming conventions
-    const strings: { [key: string]: string } = {
-        "theme_enable": "Enable Astrante Theme",
-        "theme_enable_desc": "Enable or disable the Astrante Theme customization",
-        "auto_accept": "Auto Accept Match",
-        "auto_accept_desc": "Automatically accept when a match is found",
-        "hide_tft": "Hide TFT",
-        "hide_tft_desc": "Enable TFT hiding options (unlocks sub-options below)",
-        "hide_tft_mode": "Hide TFT Mode",
-        "hide_tft_mode_desc": "Hide TFT game card from Play mode selection",
-        "hide_tft_tab": "Hide TFT Tab",
-        "hide_tft_tab_desc": "Hide TFT navigation tab",
-        "hide_tft_mission": "TFT Mission",
-        "hide_tft_mission_desc": "Hide TFT tab from Objectives window",
-    };
-    return strings[key] || key;
 }
 
 /**

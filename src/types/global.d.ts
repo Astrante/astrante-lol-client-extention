@@ -19,8 +19,8 @@ interface AstranteDataStore {
     isSettingTreeEnabled(key: string): boolean;
 }
 
-// Pengu Context interface (basic definition)
-interface PenguContext {
+// Pengu Context interface (basic definition) - exported for use in other modules
+export interface PenguContext {
     rcp: any;
     [key: string]: any;
 }
@@ -37,6 +37,7 @@ declare global {
         pengu?: PenguContext;
     }
 
+    // Global variable (window.AstranteData is assigned at runtime)
     const AstranteData: AstranteDataStore;
 }
 

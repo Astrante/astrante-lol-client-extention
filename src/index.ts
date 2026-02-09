@@ -7,8 +7,9 @@ import "./utils/themeDataStore.ts";
 import "./languages.ts";
 import { Settings } from "./plugins/settings.ts";
 import { initializePlugins } from "./utils/themeDataStore.js";
+import type { PenguContext } from "./types/global.d.ts";
 
-export function init(context: any) {
+export function init(context: PenguContext) {
     Settings(context);
 }
 
