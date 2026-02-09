@@ -110,4 +110,4 @@ Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 
 ## 📝 Лицензия
 
-WTFPL - Do What The F*ck You Want To Public License
+MIT License - см. [LICENSE](../LICENSE) для подробностей

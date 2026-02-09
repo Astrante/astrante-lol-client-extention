@@ -271,7 +271,7 @@ Contributions are welcome! Please:
 
 ## License
 
-WTFPL - Do What The F*ck You Want To Public License
+MIT License - see [LICENSE](LICENSE) for details
 
 ---
 

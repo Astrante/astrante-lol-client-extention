@@ -2,9 +2,9 @@
 
 # ✨ Astrante Theme
 
-**Beautiful theme with AutoAccept for Pengu Loader**
+**Extension for LoL client** (works with [Pengu Loader](https://pengu.lol/))
 
-[![License](https://img.shields.io/badge/license-WTFPL-blue)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![GitHub](https://img.shields.io/badge/Github-Astrante-green)](https://github.com/Astrante)
 
 [English](#english) • [Русский](#русский)
@@ -24,10 +24,14 @@
 ### Features
 
 - ✅ **Auto Accept** — Automatically accept match making queue
-- 🎨 **Beautiful UI** — Clean and modern theme design
-- 🌍 **Multi-language** — English and Russian support
-- ⚙️ **Easy Toggle** — Enable/disable from settings menu
-- 🚀 **Simple Installation** — One-click installer
+- 🔒 **Hide TFT Tab** — Clean up your client
+- 🖼️ **Wallpapers** — Coming soon
+
+### Languages
+
+- 🇬🇧 English
+- 🇷🇺 Russian
+- 🌍 More coming soon
 
 ### Installation
 
@@ -43,31 +47,21 @@
 
 1. Download the latest release from [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
 2. Extract the archive
-3. Copy the extracted folder to:
-   ```
-   <Pengu Loader>/plugins/AstranteTheme/
-   ```
+3. Copy to `<Pengu Loader>/plugins/AstranteTheme/`
 4. Restart Pengu Loader
 
 ### Usage
 
-After installation:
-
-1. Open Pengu Loader
-2. Go to **Settings** → **Astrante Theme**
-3. Toggle features:
-   - **Enable Theme** — Turn the theme on/off
-   - **Auto Accept** — Auto-accept champion select
+Open Pengu Loader → **Settings** → **Astrante Theme**
 
 ### Requirements
 
-- **Pengu Loader** — [Download here](https://pengu-loader.com/)
+- [Pengu Loader](https://pengu.lol/)
 - Windows 10/11
 
 ### Support
 
-- 📧 Issues: [GitHub Issues](https://github.com/Astrante/astrante-lol-client-extention/issues)
-- 💬 Discord: *Coming soon*
+- 📧 [GitHub Issues](https://github.com/Astrante/astrante-lol-client-extention/issues)
 
 ---
 
@@ -75,51 +69,45 @@ After installation:
 
 ### Возможности
 
-- ✅ **Auto Accept** — Автоматический прием очереди поиска
-- 🎨 **Красивый интерфейс** — Чистый и современный дизайн
-- 🌍 **Мультиязычность** — Поддержка английского и русского
-- ⚙️ **Простое управление** — Включение/выключение из настроек
-- 🚀 **Простая установка** — Установка в один клик
+- ✅ **Auto Accept** — Автоматический прием очереди
+- 🔒 **Скрытие TFT** — Убирает лишнюю вкладку
+- 🖼️ **Обои** — Скоро
+
+### Языки
+
+- 🇬🇧 Английский
+- 🇷🇺 Русский
+- 🌍 Скоро больше
 
 ### Установка
 
 #### Способ 1: Инсталлятор (Рекомендуется)
 
-1. Скачайте последний инсталлятор из [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
+1. Скачайте инсталлятор из [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
 2. Запустите `AstranteTheme-Installer.exe`
-3. Выберите папку установки Pengu Loader
+3. Выберите папку Pengu Loader
 4. Нажмите "Install"
 5. 🎉 Готово!
 
 #### Способ 2: Вручную
 
-1. Скачайте последний релиз из [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
+1. Скачайте релиз из [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
 2. Распакуйте архив
-3. Скопируйте папку в:
-   ```
-   <Pengu Loader>/plugins/AstranteTheme/
-   ```
+3. Скопируйте в `<Pengu Loader>/plugins/AstranteTheme/`
 4. Перезапустите Pengu Loader
 
 ### Использование
 
-После установки:
-
-1. Откройте Pengu Loader
-2. Перейдите в **Настройки** → **Astrante Theme**
-3. Включите функции:
-   - **Enable Theme** — Включить/выключить тему
-   - **Auto Accept** — Автоматический прием чемпионов
+Pengu Loader → **Настройки** → **Astrante Theme**
 
 ### Требования
 
-- **Pengu Loader** — [Скачать](https://pengu-loader.com/)
+- [Pengu Loader](https://pengu.lol/)
 - Windows 10/11
 
 ### Поддержка
 
-- 📧 Проблемы: [GitHub Issues](https://github.com/Astrante/astrante-lol-client-extention/issues)
-- 💬 Discord: *Скоро*
+- 📧 [GitHub Issues](https://github.com/Astrante/astrante-lol-client-extention/issues)
 
 ---
 
@@ -127,7 +115,7 @@ After installation:
 
 ## 📜 License
 
-WTFPL - Do What The F*ck You Want To Public License
+MIT License - see [LICENSE](LICENSE) for details
 
 Made with ❤️ by [Astrante](https://github.com/Astrante)
 

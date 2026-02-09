@@ -16,7 +16,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-AppCopyright=Copyright (C) 2025 {#AppPublisher}
+AppCopyright=Copyright (C) 2025 {#AppPublisher}. MIT License.
 
 ; Default directory - will be set dynamically by user selection
 DefaultDirName={code:GetPenguPath}\plugins\simpletheme
