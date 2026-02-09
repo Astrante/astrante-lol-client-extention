@@ -1,6 +1,6 @@
 /**
- * @author Simple
- * @description Settings utilities for Simple Theme
+ * @author Astrante
+ * @description Settings utilities for Astrante Theme
  */
 
 export function settingsUtils(context: any, structure: any[]) {

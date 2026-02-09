@@ -1,6 +1,6 @@
 /**
  * @author Teisseire117
- * @modifier Simple
+ * @modifier Astrante
  * @version 1.0.0
  * @description Utility functions for League of Legends client customization
  */

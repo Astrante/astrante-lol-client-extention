@@ -1,17 +1,71 @@
 /**
  * @author Astrante
  * @description Theme Settings tab for Astrante Theme
+ *           Generic tree-based settings system - supports unlimited depth
  */
 
+import { SETTINGS_TREE } from "../../utils/themeDataStore.js";
+
 // Settings keys that we track for changes
-const TRACKED_SETTINGS = [
-    "theme_enabled",
-    "auto_accept",
-    "hide_tft",
-    "hide_tft_mode",
-    "hide_tft_tab",
-    "hide_tft_mission"
-];
+const TRACKED_SETTINGS = Object.keys(SETTINGS_TREE);
+
+// Store for checkbox elements by key
+const checkboxElements: { [key: string]: HTMLInputElement } = {};
+// Store for row elements by key
+const rowElements: { [key: string]: HTMLElement } = {};
+
+/**
+ * Update the visual state (disabled/enabled) of a single setting row
+ * @param key - The setting key to update
+ * @param restartButton - The restart button element
+ */
+function updateSettingRowState(key: string, restartButton: any): void {
+    const input = checkboxElements[key];
+    const row = rowElements[key];
+
+    if (!input || !row) return;
+
+    const shouldBeEnabled = AstranteData.areAllParentsEnabled(key);
+    input.disabled = !shouldBeEnabled;
+
+    if (shouldBeEnabled) {
+        row.style.opacity = "1";
+        row.style.pointerEvents = "auto";
+    } else {
+        row.style.opacity = "0.5";
+        row.style.pointerEvents = "none";
+    }
+
+    // Check for changes and update restart button
+    const hasChanges = checkForChanges();
+    updateRestartButtonState(restartButton, hasChanges);
+}
+
+/**
+ * Recursively update all children of a setting
+ * @param parentKey - The parent setting key
+ * @param restartButton - The restart button element
+ */
+function updateChildrenState(parentKey: string, restartButton: any): void {
+    for (const [key, node] of Object.entries(SETTINGS_TREE)) {
+        if (node.parent === parentKey) {
+            updateSettingRowState(key, restartButton);
+            // Recursively update children
+            updateChildrenState(key, restartButton);
+        }
+    }
+}
+
+/**
+ * Update all settings state based on tree hierarchy
+ * @param restartButton - The restart button element
+ */
+function updateAllSettingsState(restartButton: any): void {
+    // Update each setting's state
+    for (const key of TRACKED_SETTINGS) {
+        updateSettingRowState(key, restartButton);
+    }
+}
 
 export async function themeSettings(container: any) {
 
@@ -76,7 +130,7 @@ export async function themeSettings(container: any) {
     clientTitle.textContent = "CLIENT";
     clientSection.appendChild(clientTitle);
 
-    // Theme Enable Toggle
+    // Theme Enable Toggle (root)
     const enableRow = createCheckboxRow(
         restartButton,
         "theme_enable",
@@ -149,103 +203,43 @@ export async function themeSettings(container: any) {
     tftSection.appendChild(tftSubSection);
     generalSection.appendChild(tftSection);
 
-    // Get checkbox elements for master toggle logic
+    // Store references to inputs and rows
     const themeEnableInput = enableRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    const autoAcceptInput = autoAcceptRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftInput = hideTftRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftModeInput = hideTftModeRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftTabInput = hideTftTabRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftMissionInput = hideTftMissionRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
 
-    // Collect all rows that should be controlled by theme enable toggle
-    const controlledRows = [
-        autoAcceptRow,
-        hideTftRow,
-        hideTftModeRow,
-        hideTftTabRow,
-        hideTftMissionRow
-    ];
+    checkboxElements["theme_enabled"] = themeEnableInput;
+    checkboxElements["auto_accept"] = autoAcceptInput;
+    checkboxElements["hide_tft"] = hideTftInput;
+    checkboxElements["hide_tft_mode"] = hideTftModeInput;
+    checkboxElements["hide_tft_tab"] = hideTftTabInput;
+    checkboxElements["hide_tft_mission"] = hideTftMissionInput;
+
+    rowElements["theme_enabled"] = enableRow;
+    rowElements["auto_accept"] = autoAcceptRow;
+    rowElements["hide_tft"] = hideTftRow;
+    rowElements["hide_tft_mode"] = hideTftModeRow;
+    rowElements["hide_tft_tab"] = hideTftTabRow;
+    rowElements["hide_tft_mission"] = hideTftMissionRow;
 
     // Initialize baseline on first load (if not exists)
     initializeBaseline();
 
-    // Initialize TFT sub-settings state first
-    updateTftSubSettings();
+    // Initialize all settings state based on tree hierarchy
+    updateAllSettingsState(restartButton);
 
-    // Then initialize state based on theme enable toggle
-    updateAllSettingsState();
-
-    // Check for changes on load
-    updateRestartButtonState(restartButton, checkForChanges());
-
-    // Theme enable toggle listener
-    themeEnableInput.addEventListener("change", () => {
-        updateAllSettingsState();
-    });
-
-    // Hide TFT master toggle listener
-    hideTftInput.addEventListener("change", () => {
-        updateTftSubSettings();
-    });
-
-    function updateAllSettingsState() {
-        const isThemeEnabled = themeEnableInput.checked;
-
-        // Enable/disable all controlled settings visually
-        controlledRows.forEach(row => {
-            const input = row.querySelector('input[type="checkbox"]') as HTMLInputElement;
-            const rowElement = row as HTMLElement;
-
-            if (!isThemeEnabled) {
-                // Theme disabled - disable all controlled settings
-                if (input) {
-                    input.disabled = true;
-                }
-                rowElement.style.opacity = "0.5";
-                rowElement.style.pointerEvents = "none";
-            } else {
-                // Theme enabled - enable all controlled settings
-                if (input) {
-                    input.disabled = false;
-                }
-                rowElement.style.opacity = "1";
-                rowElement.style.pointerEvents = "auto";
-            }
-        });
-
-        // After theme enable state, let TFT toggle control its sub-settings
-        updateTftSubSettings();
-
-        // Check for changes and update restart button
-        const hasChanges = checkForChanges();
-        updateRestartButtonState(restartButton, hasChanges);
-    }
-
-    function updateTftSubSettings() {
-        // Check BOTH theme enable AND hide TFT toggle
-        const isThemeEnabled = themeEnableInput.checked;
-        const isMasterEnabled = hideTftInput.checked;
-        const shouldEnable = isThemeEnabled && isMasterEnabled;
-
-        // Enable/disable sub-options based on BOTH conditions
-        hideTftModeInput.disabled = !shouldEnable;
-        hideTftTabInput.disabled = !shouldEnable;
-        hideTftMissionInput.disabled = !shouldEnable;
-
-        // Update visual state
-        [hideTftModeRow, hideTftTabRow, hideTftMissionRow].forEach(row => {
-            const checkbox = row as HTMLElement;
-            if (!shouldEnable) {
-                checkbox.style.opacity = "0.5";
-                checkbox.style.pointerEvents = "none";
-            } else {
-                checkbox.style.opacity = "1";
-                checkbox.style.pointerEvents = "auto";
-            }
-        });
-
-        // Check for changes and update restart button
-        const hasChanges = checkForChanges();
-        updateRestartButtonState(restartButton, hasChanges);
+    // Add listeners for all settings
+    for (const key of TRACKED_SETTINGS) {
+        const input = checkboxElements[key];
+        if (input) {
+            input.addEventListener("change", () => {
+                // When any setting changes, update all its descendants
+                updateChildrenState(key, restartButton);
+            });
+        }
     }
 
     container.appendChild(generalSection);

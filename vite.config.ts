@@ -103,7 +103,7 @@ export default defineConfig((config) => ({
                 await writeFile(indexJs, jsCode);
 
                 // Add author comment block
-                const Author = `/**\n* @name Simple Theme\n* @author Simple\n* @description Simple theme with AutoAccept for Pengu Loader\n*/`;
+                const Author = `/**\n* @name Astrante Theme\n* @author Astrante\n* @description Astrante theme with AutoAccept for Pengu Loader\n*/`;
 
                 async function prependCommentToFile(filePath: string, commentBlock: string, lineNumber: number) {
                     try {

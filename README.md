@@ -40,9 +40,11 @@
 
 1. Download the latest installer from [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
 2. Run `AstranteTheme-Installer.exe`
-3. Select your Pengu Loader installation folder
+3. Select your **Pengu Loader plugins folder** (e.g., `C:\PenguLoader\plugins`)
 4. Click "Install"
 5. 🎉 Done!
+
+> **Note:** The installer will automatically create an `AstranteTheme` subfolder in the selected directory.
 
 #### Method 2: Manual
 
@@ -57,8 +59,11 @@ Open Pengu Loader → **Settings** → **Astrante Theme**
 
 ### Requirements
 
-- [Pengu Loader](https://pengu.lol/)
+- [Pengu Loader](https://pengu.lol/) — must be installed first
+- **Pengu Loader plugins folder** — usually located at `C:\PenguLoader\plugins`
 - Windows 10/11
+
+> **Important:** Make sure Pengu Loader is installed and you know where its `plugins` folder is located before installing this theme.
 
 ### Support
 
@@ -86,9 +91,11 @@ Open Pengu Loader → **Settings** → **Astrante Theme**
 
 1. Скачайте инсталлятор из [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
 2. Запустите `AstranteTheme-Installer.exe`
-3. Выберите папку Pengu Loader
+3. Выберите **папку plugins в папке Pengu Loader** (например: `C:\PenguLoader\plugins`)
 4. Нажмите "Install"
 5. 🎉 Готово!
+
+> **Примечание:** Инсталлятор автоматически создаст подпапку `AstranteTheme` в выбранной директории.
 
 #### Способ 2: Вручную
 
@@ -103,8 +110,11 @@ Pengu Loader → **Настройки** → **Astrante Theme**
 
 ### Требования
 
-- [Pengu Loader](https://pengu.lol/)
+- [Pengu Loader](https://pengu.lol/) — должен быть установлен заранее
+- **Папка plugins Pengu Loader** — обычно находится по адресу `C:\PenguLoader\plugins`
 - Windows 10/11
+
+> **Важно:** Убедитесь, что Pengu Loader установлен и вы знаете, где находится папка `plugins`, перед установкой темы.
 
 ### Поддержка
 

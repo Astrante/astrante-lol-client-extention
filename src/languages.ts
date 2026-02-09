@@ -1,6 +1,6 @@
 /**
- * @author Simple
- * @description Language system for Simple Theme
+ * @author Astrante
+ * @description Language system for Astrante Theme
  */
 
 import { getThemeName } from "./otherThings.js";
@@ -11,7 +11,7 @@ import { getThemeName } from "./otherThings.js";
  * @returns The imported locale object.
  */
 async function importLocale(langCode: string): Promise<Object> {
-    const themeName = getThemeName() || 'simpletheme';
+    const themeName = getThemeName() || 'astrante-theme';
     const module = await import(`//plugins/${themeName}/locales/${langCode}.js`);
     return module.default;
 }

@@ -6,18 +6,12 @@ export class HideTft {
     private styleElement?: HTMLStyleElement;
 
     async main() {
-        // Get master toggle
-        const masterEnabled = AstranteData.get("hide_tft", false);
-
-        // Get individual settings
-        const hideMode = AstranteData.get("hide_tft_mode", false);
-        const hideTab = AstranteData.get("hide_tft_tab", false);
-        const hideMission = AstranteData.get("hide_tft_mission", false);
-
-        // Build CSS based on settings (AND logic)
+        // Build CSS based on settings (recursive tree checking)
         let cssContent = '';
 
-        if (masterEnabled && hideTab) {
+        // Each setting is checked recursively through the entire parent chain
+        // hide_tft_tab checks: hide_tft_tab -> hide_tft -> theme_enabled
+        if (AstranteData.isSettingTreeEnabled("hide_tft_tab")) {
             cssContent += `
                 /* Hide TFT tab from main navigation */
                 lol-uikit-navigation-item.menu_item_navbar_tft,
@@ -27,7 +21,8 @@ export class HideTft {
             `;
         }
 
-        if (masterEnabled && hideMode) {
+        // hide_tft_mode checks: hide_tft_mode -> hide_tft -> theme_enabled
+        if (AstranteData.isSettingTreeEnabled("hide_tft_mode")) {
             cssContent += `
                 /* Hide TFT game card from Play mode selection */
                 .game-type-card[data-game-mode="TFT"] {
@@ -36,7 +31,8 @@ export class HideTft {
             `;
         }
 
-        if (masterEnabled && hideMission) {
+        // hide_tft_mission checks: hide_tft_mission -> hide_tft -> theme_enabled
+        if (AstranteData.isSettingTreeEnabled("hide_tft_mission")) {
             cssContent += `
                 /* Hide TFT tab from Objectives window */
                 .tab-container[aria-label="Select Teamfight Tactics"] {

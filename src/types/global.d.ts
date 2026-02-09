@@ -1,5 +1,5 @@
 /**
- * Global type definitions for Simple Theme
+ * Global type definitions for Astrante Theme
  */
 
 interface DataStore {
@@ -15,6 +15,8 @@ interface AstranteDataStore {
     has(key: string): boolean;
     remove(key: string): boolean;
     restoreDefaults(): void;
+    areAllParentsEnabled(key: string): boolean;
+    isSettingTreeEnabled(key: string): boolean;
 }
 
 // Pengu Context interface (basic definition)
