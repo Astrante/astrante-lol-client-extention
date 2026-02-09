@@ -19,7 +19,7 @@ AppUpdatesURL={#AppURL}
 AppCopyright=Copyright (C) 2025 {#AppPublisher}. MIT License.
 
 ; Default directory - will be set dynamically by user selection
-DefaultDirName={code:GetPenguPath}\plugins\simpletheme
+DefaultDirName={code:GetPenguPath}
 DefaultGroupName={#AppName}
 
 ; Output settings
@@ -58,23 +58,33 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
-english.SelectPenguDir=Select Pengu Loader Installation Directory
-english.SelectPenguDirDescription=Please select the folder where Pengu Loader is installed.%n%nThe theme will be installed to the plugins subfolder automatically.
-english.PenguDirLabel=Pengu Loader &Directory:
+english.SelectPenguDir=Select Pengu Loader Plugins Directory
+english.SelectPenguDirDescription=Please select the folder where Pengu Loader stores its plugins.%n%nThis is usually the "plugins" folder inside Pengu Loader installation directory.%n%nThe theme will be installed to: AstranteTheme
+english.PenguDirLabel=Pengu Loader Plugins &Directory:
 english.VerifyPenguDir=Verify Pengu Loader
-english.PenguDirNotFound=The specified directory does not appear to contain Pengu Loader.%n%nDo you want to continue anyway?
+english.PenguDirNotFound=The specified directory does not appear to contain Pengu Loader plugins.%n%nDo you want to continue anyway?
 english.InstallSuccess={#AppName} has been successfully installed!%n%n%nThe theme is now available in Pengu Loader.
 english.OpenGitHub=Open GitHub Page
 english.LaunchLeague=Launch League of Legends
+english.PenguFound=Pengu Loader installation found at:
+english.PenguNotFound=Pengu Loader installation was not found automatically.%n%nPlease select the plugins folder manually.
+english.PenguinCheckResults=Folder Search Results
+english.PluginsNotFound=The plugins folder was not found in the selected Pengu Loader directory.%n%nDo you want to continue anyway?
+english.InstallPath=Installation path:
 
-russian.SelectPenguDir=Выберите папку установки Pengu Loader
-russian.SelectPenguDirDescription=Выберите папку, в которую установлен Pengu Loader.%n%nТема будет автоматически установлена в подпапку plugins.
-russian.PenguDirLabel=&Каталог Pengu Loader:
+russian.SelectPenguDir=Выберите папку плагинов Pengu Loader
+russian.SelectPenguDirDescription=Выберите папку, в которой Pengu Loader хранит свои плагины.%n%nОбычно это папка "plugins" внутри каталога установки Pengu Loader.%n%nТема будет установлена в папку: AstranteTheme
+russian.PenguDirLabel=&Каталог плагинов Pengu Loader:
 russian.VerifyPenguDir=Проверить Pengu Loader
-russian.PenguDirNotFound=Указанная папка не содержит Pengu Loader.%n%nХотите продолжить всё равно?
+russian.PenguDirNotFound=Указанная папка не содержит плагины Pengu Loader.%n%nХотите продолжить всё равно?
 russian.InstallSuccess={#AppName} успешно установлен!%n%n%nТема теперь доступна в Pengu Loader.
 russian.OpenGitHub=Открыть страницу GitHub
 russian.LaunchLeague=Запустить League of Legends
+russian.PenguFound=Установка Pengu Loader найдена в папке:
+russian.PenguNotFound=Установка Pengu Loader не была найдена автоматически.%n%nПожалуйста, выберите папку plugins вручную.
+russian.PenguinCheckResults=Результаты поиска папки
+russian.PluginsNotFound=Папка plugins не найдена в выбранном каталоге Pengu Loader.%n%nХотите продолжить всё равно?
+russian.InstallPath=Путь установки:
 
 [Files]
 ; Build output files (dist is in parent directory)
@@ -102,53 +112,77 @@ Type: filesandordirs; Name: "{app}\*"
 var
   PenguPathPage: TInputDirWizardPage;
   PenguPathValue: String;
+  IsUpdatingPath: Boolean;
 
-// Get the Pengu Loader path selected by user
+// Event handler for when the path edit field changes
+procedure PathEditChange(Sender: TObject);
+var
+  CurrentPath: String;
+  NewPath: String;
+begin
+  // Prevent recursive calls
+  if IsUpdatingPath then
+    Exit;
+
+  CurrentPath := PenguPathPage.Values[0];
+
+  // Only process if path is not empty and doesn't already end with \AstranteTheme
+  if (CurrentPath <> '') then
+  begin
+    // Remove trailing backslash if present (but not if it's just a drive letter)
+    if (Length(CurrentPath) > 1) and (CurrentPath[Length(CurrentPath)] = '\') and
+       (Length(CurrentPath) > 3) then
+      CurrentPath := Copy(CurrentPath, 1, Length(CurrentPath) - 1);
+
+    // Check if it already ends with \AstranteTheme
+    if (Length(CurrentPath) >= 13) and
+       (Copy(CurrentPath, Length(CurrentPath) - 12, 13) <> '\AstranteTheme') then
+    begin
+      IsUpdatingPath := True;
+      NewPath := CurrentPath + '\AstranteTheme';
+      PenguPathPage.Values[0] := NewPath;
+      IsUpdatingPath := False;
+    end;
+  end;
+end;
+
+// Get the Pengu Loader plugins path selected by user
 function GetPenguPath(Param: String): String;
 begin
   if PenguPathPage = nil then
-    Result := 'C:\Program Files\Pengu Loader'
+    Result := 'C:\AstranteTheme'
   else if PenguPathPage.Values[0] = '' then
-    Result := 'C:\Program Files\Pengu Loader'
+    Result := 'C:\AstranteTheme'
   else
     Result := PenguPathPage.Values[0];
 end;
 
-// Try to auto-detect Pengu Loader installation
-function DetectPenguPath: String;
-var
-  CommonPaths: array of String;
-  I: Integer;
+// Skip the standard directory selection page
+function ShouldSkipPage(PageID: Integer): Boolean;
 begin
-  // Common installation paths
-  SetArrayLength(CommonPaths, 5);
-  CommonPaths[0] := 'C:\Program Files\Pengu Loader';
-  CommonPaths[1] := 'C:\Program Files (x86)\Pengu Loader';
-  CommonPaths[2] := ExpandConstant('{localappdata}\Programs\Pengu Loader');
-  CommonPaths[3] := ExpandConstant('{pf}\Pengu Loader');
-  CommonPaths[4] := ExpandConstant('{pf32}\Pengu Loader');
+  // Skip the standard "Select Destination Location" page
+  Result := (PageID = wpSelectDir);
+end;
 
-  // Check each path
-  for I := 0 to GetArrayLength(CommonPaths) - 1 do
+// Called when user clicks Next button - set installation directory from custom page
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  // If on the custom directory page, set the installation directory
+  if (PenguPathPage <> nil) and (CurPageID = PenguPathPage.ID) then
   begin
-    if DirExists(CommonPaths[I]) then
-    begin
-      Result := CommonPaths[I];
-      Exit;
-    end;
+    WizardForm.DirEdit.Text := PenguPathPage.Values[0];
   end;
 
-  // Default fallback
-  Result := 'C:\Program Files\Pengu Loader';
+  Result := True;
 end;
 
 // Initialize custom wizard page
 procedure InitializeWizard;
 var
-  DetectedPath: String;
+  DefaultPath: String;
 begin
-  // Auto-detect Pengu Loader path
-  DetectedPath := DetectPenguPath();
+  DefaultPath := 'C:\AstranteTheme';
+  IsUpdatingPath := False;
 
   // Create custom directory selection page
   PenguPathPage := CreateInputDirPage(wpSelectDir,
@@ -158,61 +192,11 @@ begin
     False, '');
 
   PenguPathPage.Add('');
-  PenguPathPage.Values[0] := DetectedPath;
-  PenguPathValue := DetectedPath;
-end;
+  PenguPathPage.Values[0] := DefaultPath;
+  PenguPathValue := DefaultPath;
 
-// Validate user input before proceeding
-function NextButtonClick(CurPageID: Integer): Boolean;
-var
-  PathStr: String;
-begin
-  Result := True;
-
-  if CurPageID = PenguPathPage.ID then
-  begin
-    PathStr := PenguPathPage.Values[0];
-    PenguPathValue := PathStr;
-
-    // Check if path is empty
-    if PathStr = '' then
-    begin
-      MsgBox(CustomMessage('PenguDirNotFound'), mbError, MB_OK);
-      Result := False;
-      Exit;
-    end;
-
-    // Optional: Verify Pengu Loader exists (uncomment to enable)
-    (*
-    if not DirExists(PathStr + '\plugins') then
-    begin
-      if MsgBox(CustomMessage('PenguDirNotFound'), mbConfirmation, MB_YESNO) = IDNO then
-      begin
-        Result := False;
-        Exit;
-      end;
-    end;
-    *)
-  end;
-end;
-
-// Override the directory shown on the "Select Destination Location" page
-function AppendPath(Path: String; Append: String): String;
-begin
-  if Copy(Path, Length(Path), 1) = '\' then
-    Result := Path + Append
-  else
-    Result := Path + '\' + Append;
-end;
-
-// Update wizard with selected path
-procedure CurPageChanged(CurPageID: Integer);
-begin
-  if CurPageID = wpSelectDir then
-  begin
-    // Show the full path including plugins\AstranteTheme
-    WizardForm.DirEdit.Text := AppendPath(GetPenguPath(''), 'plugins\AstranteTheme');
-  end;
+  // Attach the event handler to the edit control
+  PenguPathPage.Edits[0].OnChange := @PathEditChange;
 end;
 
 // Get League of Legends path (optional feature)
