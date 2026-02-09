@@ -8,8 +8,12 @@
     "config": {
         "penguPath": "D:\\Program Files\\Pengu Loader"
     },
+    "_devNotes": {
+        "penguPath": "Change this to your Pengu Loader installation path for local development (npm run build/dev)"
+    },
     "scripts": {
-        "build": "tsc && vite build"
+        "build": "tsc && vite build",
+        "build:installer": "node installer/build-installer.js"
     },
     "devDependencies": {
         "@types/node": "^20.4.7",
