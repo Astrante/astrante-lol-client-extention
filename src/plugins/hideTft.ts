@@ -7,11 +7,12 @@ export class HideTft {
 
     async main() {
         // Get master toggle
-        const masterEnabled = ElainaData.get("hide_tft", false);
+        const masterEnabled = AstranteData.get("hide_tft", false);
 
         // Get individual settings
-        const hideMode = ElainaData.get("hide_tft_mode", false);
-        const hideTab = ElainaData.get("hide_tft_tab", false);
+        const hideMode = AstranteData.get("hide_tft_mode", false);
+        const hideTab = AstranteData.get("hide_tft_tab", false);
+        const hideMission = AstranteData.get("hide_tft_mission", false);
 
         // Build CSS based on settings (AND logic)
         let cssContent = '';
@@ -33,6 +34,44 @@ export class HideTft {
                     display: none !important;
                 }
             `;
+        }
+
+        if (masterEnabled && hideMission) {
+            cssContent += `
+                /* Hide TFT tab from Objectives window */
+                .tab-container[aria-label="Select Teamfight Tactics"] {
+                    display: none !important;
+                }
+
+                /* Style for spacer element */
+                .tft-spacer-tab {
+                    border-bottom: 2px solid #c89b3c;
+                    align-items: flex-end;
+                    display: flex;
+                    height: 32px;
+                    justify-content: center;
+                    padding-bottom: 5px;
+                    width: 95px;
+                }
+            `;
+
+            // Add spacer element via JavaScript
+            const addSpacer = () => {
+                const gameTabsContainer = document.querySelector('.objectives-game-tabs');
+                if (gameTabsContainer && !gameTabsContainer.querySelector('.tft-spacer-tab')) {
+                    const lolTab = gameTabsContainer.querySelector('.tab-container[aria-label="Select League of Legends"]');
+                    if (lolTab && lolTab.classList.contains('active')) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'tft-spacer-tab';
+                        lolTab.after(spacer);
+                    }
+                }
+            };
+
+            // Try immediately and also observe for changes
+            addSpacer();
+            const observer = new MutationObserver(() => addSpacer());
+            observer.observe(document.body, { childList: true, subtree: true });
         }
 
         // Only add style element if there's CSS to apply

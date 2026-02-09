@@ -25,7 +25,7 @@ export function init(context: any) {
 class SimpleTheme {
     async main() {
         // Only run plugins if theme is enabled
-        if (!ElainaData.get("theme_enabled", true)) {
+        if (!AstranteData.get("theme_enabled", true)) {
             return;
         }
 
@@ -35,9 +35,9 @@ class SimpleTheme {
         autoAccept.main(true);
 
         // Hide TFT tab and/or mode
-        const hideTft = ElainaData.get("hide_tft", false);
-        const hideTftMode = ElainaData.get("hide_tft_mode", false);
-        const hideTftTab = ElainaData.get("hide_tft_tab", false);
+        const hideTft = AstranteData.get("hide_tft", false);
+        const hideTftMode = AstranteData.get("hide_tft_mode", false);
+        const hideTftTab = AstranteData.get("hide_tft_tab", false);
 
         // Only load plugin if master is enabled AND at least one sub-option is active
         if (hideTft && (hideTftMode || hideTftTab)) {

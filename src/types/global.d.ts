@@ -9,7 +9,7 @@ interface DataStore {
     remove(key: string): void;
 }
 
-interface ElainaDataStore {
+interface AstranteDataStore {
     get(key: string, fallback?: any): any;
     set(key: string, value: any): boolean;
     has(key: string): boolean;
@@ -26,7 +26,7 @@ interface PenguContext {
 declare global {
     interface Window {
         DataStore: DataStore;
-        ElainaData: ElainaDataStore;
+        AstranteData: AstranteDataStore;
         reloadClient(): void;
         restartClient(): void;
         getString(key: string): Promise<string>;
@@ -35,7 +35,7 @@ declare global {
         pengu?: PenguContext;
     }
 
-    const ElainaData: ElainaDataStore;
+    const AstranteData: AstranteDataStore;
 }
 
 export {};

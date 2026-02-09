@@ -1,6 +1,6 @@
 import defaultSettings from "../config/datastoreDefault.js";
 
-const ElainaData = {
+const AstranteData = {
     /**
      * Gets a value from the datastore.
      * @param key The key to retrieve.
@@ -59,4 +59,4 @@ const ElainaData = {
     }
 };
 
-window.ElainaData = ElainaData
+window.AstranteData = AstranteData

@@ -1,15 +1,15 @@
 export default [
     {
         "groupName": 'astrantetheme',
-        "titleKey": 'el_title',
+        "titleKey": 'astr_title',
         "titleName": 'Astrante Theme',
-        "capitalTitleKey": 'el_title_capital',
+        "capitalTitleKey": 'astr_title_capital',
         "capitalTitleName": 'ASTRANTE THEME',
         "element": [
             {
                 "name": "astrante-theme-settings",
-                "title": "el_theme-settings",
-                "titleName": "THEME SETTINGS",
+                "title": "astr_theme-settings",
+                "titleName": "CUSTOMIZATION",
                 "class": "theme_settings",
                 "id": "AstranteThemeSettings",
             },

@@ -7,11 +7,10 @@ import structure from "./settingsStructure.ts"
 import { themeSettings } from "./settingsTabs/themeSettings.ts"
 
 // Initialize settings change number
-ElainaData.set("settingsChangenumber", 0)
+AstranteData.set("settingsChangenumber", 0)
 
 /**
  * Settings utility function to register settings with LoL's RCP API
- * Based on ElainaV4's implementation
  */
 function settingsUtils(context: any, groupDataArray: any[]) {
     // Hook into rcp-fe-lol-settings to register settings categories
@@ -89,7 +88,7 @@ function settingsUtils(context: any, groupDataArray: any[]) {
         const originalGet = tra.__proto__.get;
 
         tra.__proto__.get = function(this: any, key: string) {
-            if (key.startsWith('el_')) {
+            if (key.startsWith('astr_')) {
                 for (const groupData of groupDataArray) {
                     if (key === groupData.titleKey) {
                         return groupData.titleName;
