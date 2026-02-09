@@ -4,8 +4,8 @@
  */
 
 export function settingsUtils(context: any, structure: any[]) {
-    console.log('[SimpleTheme] settingsUtils called with context:', context);
-    console.log('[SimpleTheme] settingsUtils called with structure:', structure);
+    console.log('[AstranteTheme] settingsUtils called with context:', context);
+    console.log('[AstranteTheme] settingsUtils called with structure:', structure);
 
     const result = context.setSettings(
         structure.map((group: any) => ({
@@ -14,5 +14,5 @@ export function settingsUtils(context: any, structure: any[]) {
         }))
     );
 
-    console.log('[SimpleTheme] setSettings result:', result);
+    console.log('[AstranteTheme] setSettings result:', result);
 }

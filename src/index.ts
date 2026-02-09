@@ -5,7 +5,7 @@
  */
 
 // Log that the plugin is loading
-console.log('[SimpleTheme] Plugin file loaded!');
+console.log('[AstranteTheme] Plugin file loaded!');
 
 // Import theme DataStore
 import "./utils/themeDataStore.ts";
@@ -18,11 +18,11 @@ import { Settings } from "./plugins/settings.ts";
 
 // Export Init
 export function init(context: any) {
-    console.log('[SimpleTheme] INIT FUNCTION CALLED!', context);
+    console.log('[AstranteTheme] INIT FUNCTION CALLED!', context);
     Settings(context);
 }
 
-class SimpleTheme {
+class AstranteTheme {
     async main() {
         // Only run plugins if theme is enabled
         if (!AstranteData.get("theme_enabled", true)) {
@@ -48,7 +48,7 @@ class SimpleTheme {
     }
 }
 
-const simpleTheme = new SimpleTheme();
+const simpleTheme = new AstranteTheme();
 window.addEventListener("load", async () => {
     await simpleTheme.main();
 });

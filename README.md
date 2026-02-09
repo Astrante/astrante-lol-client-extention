@@ -1,4 +1,4 @@
-# Simple Theme
+# Astrante Theme
 
 A simple theme for Pengu Loader with AutoAccept functionality.
 
@@ -29,7 +29,7 @@ A simple theme for Pengu Loader with AutoAccept functionality.
 ## Project Structure
 
 ```
-SimpleTheme/
+AstranteTheme/
 ├── src/
 │   ├── index.ts                 # Main entry point
 │   ├── languages.ts             # Language system
@@ -59,7 +59,7 @@ After building, the theme will be automatically copied to your Pengu Loader plug
 
 **Settings:**
 - Open the Pengu Loader settings
-- Navigate to "Simple Theme" section
+- Navigate to "Astrante Theme" section
 - Toggle "Enable Theme" to enable/disable the theme
 - Toggle "Auto Accept" to enable/disable auto accept feature
 

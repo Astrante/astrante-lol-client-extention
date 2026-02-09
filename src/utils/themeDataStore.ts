@@ -8,7 +8,7 @@ const AstranteData = {
      * @returns The value associated with the key or the fallback.
      */
     get (key: string, fallback = null) {
-        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings)
+        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings)
         return data.hasOwnProperty(key) ? data[key] : (defaultSettings[key] ?? fallback);
     },
 
@@ -19,9 +19,9 @@ const AstranteData = {
      * @returns True if the key was set successfully, false otherwise.
      */
     set (key: string, value: any) {
-        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings)
+        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings)
         data[key] = value
-        window.DataStore.set("SimpleTheme", data)
+        window.DataStore.set("AstranteTheme", data)
         return true;
     },
 
@@ -31,7 +31,7 @@ const AstranteData = {
      * @returns True if the key exists, false otherwise.
      */
     has (key: string) {
-        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings);
+        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings);
         return data.hasOwnProperty(key);
     },
 
@@ -41,10 +41,10 @@ const AstranteData = {
      * @returns True if the key was removed, false otherwise.
      */
     remove (key: string) {
-        const data: Object = window.DataStore.get("SimpleTheme", defaultSettings);
+        const data: Object = window.DataStore.get("AstranteTheme", defaultSettings);
         if (data.hasOwnProperty(key)) {
             delete data[key];
-            window.DataStore.set("SimpleTheme", data);
+            window.DataStore.set("AstranteTheme", data);
             return true;
         }
         return false;
@@ -54,7 +54,7 @@ const AstranteData = {
      * Restores the default values of the theme in the datastore.
      */
     restoreDefaults () {
-        window.DataStore.set("SimpleTheme", { ...defaultSettings });
+        window.DataStore.set("AstranteTheme", { ...defaultSettings });
         window.reloadClient()
     }
 };
