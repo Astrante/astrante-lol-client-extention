@@ -9,7 +9,7 @@
  *
  * Requirements:
  * - Node.js
- * - Inno Setup 6.x installed (ISCC.exe must be in PATH)
+ * - Inno Setup 6.x installed
  */
 
 import { execSync } from 'node:child_process';
@@ -64,8 +64,8 @@ function execCommand(command, description) {
     }
 }
 
-// Check if Inno Setup is installed
-function checkInnoSetup() {
+// Check if Inno Setup is installed and return ISCC path
+function findInnoSetup() {
     logStep('Checking Inno Setup installation');
 
     const possiblePaths = [
@@ -79,21 +79,27 @@ function checkInnoSetup() {
     try {
         execSync('where ISCC.exe', { stdio: 'ignore' });
         logSuccess('Inno Setup found in PATH');
-        return true;
+        return 'ISCC.exe';
     } catch {
         // Not in PATH, check common locations
         for (const path of possiblePaths) {
             if (existsSync(path)) {
                 logSuccess(`Inno Setup found at: ${path}`);
-                return true;
+                return path;
             }
         }
     }
 
+    // Not found
     logError('Inno Setup not found!');
-    log('\nPlease install Inno Setup from: https://jrsoftware.org/isdl.php');
-    log('Make sure ISCC.exe is in your PATH or installed in a standard location.\n');
-    return false;
+    log(`\n${colors.yellow}Please install Inno Setup:${colors.reset}`);
+    log(`  🔗 https://jrsoftware.org/isdl.php\n`);
+    log(`After installation:`);
+    log(`  1. Restart your terminal, OR`);
+    log(`  2. Make sure it's installed in a standard location:\n`);
+    possiblePaths.forEach(path => log(`     ${path}`));
+    log('');
+    return null;
 }
 
 // Main build process
@@ -106,8 +112,9 @@ async function buildInstaller() {
 ╚═══════════════════════════════════════════════════════════╝
 ${colors.reset}`);
 
-    // Check Inno Setup
-    if (!checkInnoSetup()) {
+    // Find Inno Setup
+    const isccPath = findInnoSetup();
+    if (!isccPath) {
         process.exit(1);
     }
 
@@ -135,7 +142,7 @@ ${colors.reset}`);
     }
 
     const compileSuccess = execCommand(
-        `ISCC.exe "${installerScript}"`,
+        `"${isccPath}" "${installerScript}"`,
         'Compiling installer with Inno Setup'
     );
 
