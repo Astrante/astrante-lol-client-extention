@@ -2,7 +2,8 @@
 
 # ✨ Astrante Theme
 
-**Extension for LoL client** (works with [Pengu Loader](https://pengu.lol/))
+**Extension for League of Legends client** <br>
+*(works with [Pengu Loader](https://pengu.lol/))*
 
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![GitHub](https://img.shields.io/badge/Github-Astrante-green)](https://github.com/Astrante)
