@@ -9,7 +9,8 @@ const TRACKED_SETTINGS = [
     "auto_accept",
     "hide_tft",
     "hide_tft_mode",
-    "hide_tft_tab"
+    "hide_tft_tab",
+    "hide_tft_mission"
 ];
 
 export async function themeSettings(container: any) {
@@ -18,16 +19,28 @@ export async function themeSettings(container: any) {
     const generalSection = document.createElement("div");
     generalSection.className = "lol-settings-general-section";
 
-    // Restart notice with button
-    const notice = document.createElement("div");
-    notice.className = "lol-settings-generic-notice";
-    notice.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px;";
+    // Container for notice + button (inline layout)
+    const noticeContainer = document.createElement("div");
+    noticeContainer.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;";
 
-    // Notice text (gold color)
-    const noticeText = document.createElement("p");
-    noticeText.style.cssText = "margin: 0; color: #cdbe91; font-size: 13px; flex: 1;";
-    noticeText.textContent = "Some changes require a client restart to take effect.";
-    notice.appendChild(noticeText);
+    // Subtitle text with tooltip wrapper
+    const infoTextWrapper = document.createElement("div");
+    infoTextWrapper.style.cssText = "display: flex; align-items: center; gap: 4px; flex: 1;";
+
+    // Subtitle text
+    const infoText = document.createElement("p");
+    infoText.className = "lol-settings-general-subtitle";
+    infoText.style.cssText = "font-size: 12px; margin: 0;";
+    infoText.textContent = "Changes in this tab require client restart";
+
+    // Tooltip component
+    const tooltip = document.createElement("div");
+    tooltip.className = "lol-tooltip-component ember-view";
+    tooltip.setAttribute("data-tooltip-dest", "general");
+    tooltip.setAttribute("data-tooltip-tooltip", "Changes are saved automatically. You can modify settings and close - they will take effect on the next launch.");
+
+    infoTextWrapper.appendChild(infoText);
+    infoTextWrapper.appendChild(tooltip);
 
     // Restart button (normal by default, gold when there are changes)
     const restartButton = document.createElement("lol-uikit-flat-button");
@@ -50,8 +63,9 @@ export async function themeSettings(container: any) {
         }
     });
 
-    notice.appendChild(restartButton);
-    generalSection.appendChild(notice);
+    noticeContainer.appendChild(infoTextWrapper);
+    noticeContainer.appendChild(restartButton);
+    generalSection.appendChild(noticeContainer);
 
     // CLIENT section
     const clientSection = document.createElement("div");
@@ -123,6 +137,15 @@ export async function themeSettings(container: any) {
     );
     tftSubSection.appendChild(hideTftTabRow);
 
+    // Hide TFT Mission Toggle
+    const hideTftMissionRow = createCheckboxRow(
+        restartButton,
+        "hide_tft_mission",
+        "hide_tft_mission",
+        true
+    );
+    tftSubSection.appendChild(hideTftMissionRow);
+
     tftSection.appendChild(tftSubSection);
     generalSection.appendChild(tftSection);
 
@@ -131,13 +154,15 @@ export async function themeSettings(container: any) {
     const hideTftInput = hideTftRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftModeInput = hideTftModeRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
     const hideTftTabInput = hideTftTabRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    const hideTftMissionInput = hideTftMissionRow.querySelector('input[type="checkbox"]') as HTMLInputElement;
 
     // Collect all rows that should be controlled by theme enable toggle
     const controlledRows = [
         autoAcceptRow,
         hideTftRow,
         hideTftModeRow,
-        hideTftTabRow
+        hideTftTabRow,
+        hideTftMissionRow
     ];
 
     // Initialize baseline on first load (if not exists)
@@ -204,9 +229,10 @@ export async function themeSettings(container: any) {
         // Enable/disable sub-options based on BOTH conditions
         hideTftModeInput.disabled = !shouldEnable;
         hideTftTabInput.disabled = !shouldEnable;
+        hideTftMissionInput.disabled = !shouldEnable;
 
         // Update visual state
-        [hideTftModeRow, hideTftTabRow].forEach(row => {
+        [hideTftModeRow, hideTftTabRow, hideTftMissionRow].forEach(row => {
             const checkbox = row as HTMLElement;
             if (!shouldEnable) {
                 checkbox.style.opacity = "0.5";
@@ -236,7 +262,7 @@ function createCheckboxRow(
     checkbox.className = "lol-settings-general-row";
     checkbox.setAttribute("for", dataKey);
 
-    const isEnabled = ElainaData.get(dataKey, defaultValue);
+    const isEnabled = AstranteData.get(dataKey, defaultValue);
     if (isEnabled) {
         checkbox.classList.add("checked");
     }
@@ -259,7 +285,7 @@ function createCheckboxRow(
     // Add change listener
     input.addEventListener("change", () => {
         const newValue = input.checked;
-        ElainaData.set(dataKey, newValue);
+        AstranteData.set(dataKey, newValue);
 
         // Update checkbox class
         if (newValue) {
@@ -273,8 +299,8 @@ function createCheckboxRow(
         updateRestartButtonState(restartButton, hasChanges);
 
         // Trigger settings change notification
-        const changeNumber = ElainaData.get("settingsChangenumber", 0);
-        ElainaData.set("settingsChangenumber", changeNumber + 1);
+        const changeNumber = AstranteData.get("settingsChangenumber", 0);
+        AstranteData.set("settingsChangenumber", changeNumber + 1);
     });
 
     // Assemble checkbox component
@@ -297,6 +323,8 @@ function getStringSync(key: string): string {
         "hide_tft_mode_desc": "Hide TFT game card from Play mode selection",
         "hide_tft_tab": "Hide TFT Tab",
         "hide_tft_tab_desc": "Hide TFT navigation tab",
+        "hide_tft_mission": "TFT Mission",
+        "hide_tft_mission_desc": "Hide TFT tab from Objectives window",
     };
     return strings[key] || key;
 }
@@ -307,7 +335,7 @@ function getStringSync(key: string): string {
 function getCurrentSettings(): { [key: string]: boolean } {
     const settings: { [key: string]: boolean } = {};
     TRACKED_SETTINGS.forEach(key => {
-        settings[key] = ElainaData.get(key, false);
+        settings[key] = AstranteData.get(key, false);
     });
     return settings;
 }
@@ -316,7 +344,7 @@ function getCurrentSettings(): { [key: string]: boolean } {
  * Initialize baseline if it doesn't exist
  */
 function initializeBaseline() {
-    const baseline = ElainaData.get("settings_baseline", null);
+    const baseline = AstranteData.get("settings_baseline", null);
     if (!baseline) {
         saveCurrentStateAsBaseline();
     }
@@ -327,14 +355,14 @@ function initializeBaseline() {
  */
 function saveCurrentStateAsBaseline() {
     const currentSettings = getCurrentSettings();
-    ElainaData.set("settings_baseline", JSON.stringify(currentSettings));
+    AstranteData.set("settings_baseline", JSON.stringify(currentSettings));
 }
 
 /**
  * Check if current settings differ from baseline
  */
 function checkForChanges(): boolean {
-    const baselineStr = ElainaData.get("settings_baseline", null);
+    const baselineStr = AstranteData.get("settings_baseline", null);
     if (!baselineStr) return false;
 
     try {
