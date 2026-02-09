@@ -6,21 +6,10 @@
  */
 
 // State variables
-let pvp_net_id: any,
-    summoner_id: any,
-    phase: any;
+let phase: any;
 
 // Track active WebSocket connections for cleanup
 const activeWebSockets: Set<WebSocket> = new Set();
-
-/**
- * Pauses execution for a specified time
- * @param {number} time - The time to pause in milliseconds
- * @returns {Promise<void>} A promise that resolves after the specified time
- */
-async function stop(time: number): Promise<void> {
-    return await new Promise(resolve => setTimeout(resolve, time));
-}
 
 /**
  * Adds a CSS style to the document head with a specific ID
@@ -34,26 +23,6 @@ function addStyleWithID(Id: string, style: string): HTMLStyleElement {
     styleElement.textContent = style;
     document.head.appendChild(styleElement);
     return styleElement;
-}
-
-/**
- * Adds a CSS style to the document head (generates unique ID)
- * @param style - The CSS style to add
- * @returns {HTMLStyleElement} The created style element
- */
-function addStyle(style: string): HTMLStyleElement {
-    const id = 'style-' + Math.random().toString(36).slice(2, 11);
-    return addStyleWithID(id, style);
-}
-
-/**
- * Fetches the current summoner's ID
- * @returns {Promise<number>} The summoner ID
- */
-async function getSummonerID(): Promise<number> {
-    const response = await fetch("/lol-summoner/v1/current-summoner");
-    const data = await response.json();
-    return JSON.parse(data.summonerId);
 }
 
 /**
@@ -97,18 +66,6 @@ function subscribe_endpoint(endpoint: string, callback: (message: MessageEvent) 
 }
 
 /**
- * Updates user PvP.net info
- * @param {MessageEvent} message - The WebSocket message event
- */
-const updateUserPvpNetInfos = async (message: MessageEvent) => {
-    const data = JSON.parse(message.data)[2].data;
-    if (data) {
-        pvp_net_id = data.id;
-        summoner_id = data.summonerId;
-    }
-};
-
-/**
  * Updates the gameflow phase
  * @param {MessageEvent} message - The WebSocket message event
  */
@@ -119,27 +76,14 @@ const updatePhaseCallback = async (message: MessageEvent) => {
 // Initialize event listeners
 window.addEventListener('load', () => {
     subscribe_endpoint("/lol-gameflow/v1/gameflow-phase", updatePhaseCallback);
-    subscribe_endpoint("/lol-chat/v1/me", updateUserPvpNetInfos);
 });
 
 // Export utility functions with getters for reactive state
 const utils = {
     get phase() { return phase; },
-    get summoner_id() { return summoner_id; },
-    get pvp_net_id() { return pvp_net_id; },
     subscribe_endpoint,
-    addStyle,
     addStyleWithID,
-    getSummonerID,
     postToLolApi,
-    stop,
-    cleanup: () => {
-        // Close all active WebSocket connections
-        for (const ws of activeWebSockets) {
-            ws.close();
-        }
-        activeWebSockets.clear();
-    }
 };
 
 export default utils;
