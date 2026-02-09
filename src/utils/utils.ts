@@ -20,25 +20,27 @@ async function stop(time: number): Promise<void> {
 }
 
 /**
- * Adds a CSS style to the document body
- * @param {string} style - The CSS style to add
+ * Adds a CSS style to the document head with a specific ID
+ * @param Id The ID for the style element
+ * @param style The CSS style to add
+ * @returns {HTMLStyleElement} The created style element
  */
-function addStyle(style: string) {
+function addStyleWithID(Id: string, style: string): HTMLStyleElement {
     const styleElement = document.createElement('style');
-    styleElement.appendChild(document.createTextNode(style));
-    document.body.appendChild(styleElement);
+    styleElement.id = Id;
+    styleElement.textContent = style;
+    document.head.appendChild(styleElement);
+    return styleElement;
 }
 
 /**
- * Adds a CSS style to the document body with a specific ID
- * @param Id The ID for the style element
- * @param style The CSS style to add
+ * Adds a CSS style to the document head (generates unique ID)
+ * @param {string} style - The CSS style to add
+ * @returns {HTMLStyleElement} The created style element
  */
-function addStyleWithID(Id: string, style: string) {
-    const styleElement = document.createElement('style');
-    styleElement.id = Id
-    styleElement.appendChild(document.createTextNode(style));
-    document.body.appendChild(styleElement);
+function addStyle(style: string): HTMLStyleElement {
+    const id = 'style-' + Math.random().toString(36).substr(2, 9);
+    return addStyleWithID(id, style);
 }
 
 /**
@@ -49,6 +51,15 @@ async function getSummonerID(): Promise<number> {
     const response = await fetch("/lol-summoner/v1/current-summoner");
     const data = await response.json();
     return JSON.parse(data.summonerId);
+}
+
+/**
+ * Sends a POST request to a LoL client API endpoint
+ * @param endpoint - The API endpoint to call
+ * @returns Promise that resolves when the request completes
+ */
+async function postToLolApi(endpoint: string): Promise<void> {
+    await fetch(endpoint, { method: 'POST' });
 }
 
 /**
@@ -100,6 +111,7 @@ const utils = {
     addStyle,
     addStyleWithID,
     getSummonerID,
+    postToLolApi,
     stop,
 };
 

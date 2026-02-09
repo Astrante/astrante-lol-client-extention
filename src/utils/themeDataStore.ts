@@ -1,4 +1,15 @@
 import defaultSettings from "../config/datastoreDefault.js";
+import utils from "./utils.js";
+
+// Import all plugins statically so they're bundled
+import { AutoAccept } from "../plugins/autoAccept.js";
+import { HideTft } from "../plugins/hideTft.js";
+
+// Plugin registry - maps paths to imported plugin classes
+const PLUGIN_REGISTRY: Record<string, any> = {
+    "./plugins/autoAccept.ts": AutoAccept,
+    "./plugins/hideTft.ts": HideTft,
+};
 
 /**
  * Plugin configuration for a setting
@@ -79,14 +90,7 @@ function areAllParentsEnabled(key: string): boolean {
  * @returns true if setting and ALL parents are enabled
  */
 function isSettingEnabled(key: string): boolean {
-    // Check the setting itself
-    const currentValue = AstranteData.get(key, false);
-    if (!currentValue) {
-        return false;
-    }
-
-    // Check all parents
-    return areAllParentsEnabled(key);
+    return AstranteData.get(key, false) && areAllParentsEnabled(key);
 }
 
 const AstranteData = {
@@ -175,30 +179,47 @@ const AstranteData = {
 const loadedPlugins: Map<string, any> = new Map();
 
 /**
+ * Normalize path to handle both forward and backward slashes (Windows compatibility)
+ * @param path - Path to normalize
+ * @returns Normalized path with forward slashes
+ */
+function normalizePath(path: string): string {
+    return path.replace(/\\/g, '/');
+}
+
+/**
  * Load a plugin if not already loaded
- * @param path - Path to plugin file
+ * @param path - Path to plugin file (used as key in loadedPlugins map)
  * @param method - Method to call (default: "main")
  * @param args - Arguments to pass to method
  */
 async function loadPlugin(path: string, method: string = "main", args: any[] = []): Promise<void> {
+    // Normalize path for cross-platform compatibility
+    const normalizedPath = normalizePath(path);
+
     // Check if already loaded
-    if (loadedPlugins.has(path)) {
+    if (loadedPlugins.has(normalizedPath)) {
         return;
     }
 
     try {
-        const module = await import(path);
-        const PluginClass = Object.values(module)[0] as any;
+        // Get plugin class from registry instead of dynamic import
+        const PluginClass = PLUGIN_REGISTRY[normalizedPath];
+        if (!PluginClass) {
+            console.error(`[AstranteTheme] Plugin not found in registry: ${normalizedPath}`);
+            return;
+        }
+
         const plugin = new PluginClass();
 
         if (typeof plugin[method] === "function") {
-            await plugin[method](...args);
+            // Dependency Injection: pass utils as first argument, then original args
+            await plugin[method](utils, ...args);
         }
 
-        loadedPlugins.set(path, plugin);
-        console.log(`[AstranteTheme] Loaded plugin: ${path}`);
+        loadedPlugins.set(normalizedPath, plugin);
     } catch (error) {
-        console.error(`[AstranteTheme] Failed to load plugin ${path}:`, error);
+        console.error(`[AstranteTheme] Failed to load plugin ${normalizedPath}:`, error);
     }
 }
 
@@ -208,8 +229,10 @@ async function loadPlugin(path: string, method: string = "main", args: any[] = [
  */
 export async function initializePlugins(): Promise<void> {
     for (const [key, node] of Object.entries(SETTINGS_TREE)) {
+        const isEnabled = AstranteData.isSettingTreeEnabled(key);
+
         // Check if setting and all parents are enabled
-        if (AstranteData.isSettingTreeEnabled(key)) {
+        if (isEnabled) {
             // Load plugins for this setting
             if (node.plugins && node.plugins.length > 0) {
                 for (const plugin of node.plugins) {

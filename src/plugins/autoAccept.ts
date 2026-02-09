@@ -3,7 +3,6 @@
  * @modifier Astrante
  */
 
-import utils from '../utils/utils.ts';
 import * as upl from "pengu-upl";
 import getString from "../languages.js";
 
@@ -11,6 +10,8 @@ let queue_accepted: boolean = false
 let player_declined: boolean = false
 
 export class AutoAccept {
+    private utils: any;  // Store utils reference
+
     autoAcceptQueueButtonSelect() {
         const element = document.getElementById("autoAcceptQueueButton") as any
         if (element?.attributes.selected != undefined) {
@@ -47,16 +48,16 @@ export class AutoAccept {
 
     acceptMatchmaking = async (): Promise<void> => {
         if (player_declined) return;
-        await fetch('/lol-matchmaking/v1/ready-check/accept', { method: 'POST' })
+        await this.utils.postToLolApi('/lol-matchmaking/v1/ready-check/accept');
     }
 
     autoAcceptCallback = async (message: Object) => {
-        utils.phase = JSON.parse(message["data"])[2]["data"]
-        if (utils.phase == "ReadyCheck" && AstranteData.get("auto_accept") && !queue_accepted) {
+        this.utils.phase = JSON.parse(message["data"])[2]["data"]
+        if (this.utils.phase == "ReadyCheck" && AstranteData.get("auto_accept") && !queue_accepted) {
             await this.acceptMatchmaking(),
             queue_accepted = true
         }
-        else if (utils.phase != "ReadyCheck") {
+        else if (this.utils.phase != "ReadyCheck") {
             queue_accepted = false
         }
     }
@@ -83,7 +84,9 @@ export class AutoAccept {
         }
     }
 
-    main = (auto_accept_button: boolean = true) => {
+    main = (utils: any, auto_accept_button: boolean = true) => {
+        this.utils = utils;  // Store utils reference
+
         window.autoAcceptQueueButtonSelect = this.autoAcceptQueueButtonSelect
 
         upl.observer.subscribeToElementCreation(".v2-lobby-root-component.ember-view .v2-footer-notifications.ember-view",async (element: any) => {

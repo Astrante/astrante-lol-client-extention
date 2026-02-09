@@ -69,6 +69,22 @@ function updateAllSettingsState(restartButton: any): void {
 
 export async function themeSettings(container: any) {
 
+    /**
+     * Restart the LoL client
+     */
+    async function restartClient(): Promise<void> {
+        try {
+            await fetch('/lol-login/v1/session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            await fetch('/riotclient/kill-and-restart-ux', { method: 'POST' });
+        } catch (error) {
+            console.error('[AstranteTheme] Failed to restart client:', error);
+        }
+    }
+
     // General settings section
     const generalSection = document.createElement("div");
     generalSection.className = "lol-settings-general-section";
@@ -101,20 +117,10 @@ export async function themeSettings(container: any) {
     restartButton.textContent = "Restart";
 
     restartButton.addEventListener("click", async () => {
-        try {
-            // Save current state as new baseline before restart
-            saveCurrentStateAsBaseline();
-            updateRestartButtonState(restartButton, false);
-
-            await fetch('/lol-login/v1/session', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({})
-            });
-            await fetch('/riotclient/kill-and-restart-ux', { method: 'POST' });
-        } catch (error) {
-            console.error('[AstranteTheme] Failed to restart client:', error);
-        }
+        // Save current state as new baseline before restart
+        saveCurrentStateAsBaseline();
+        updateRestartButtonState(restartButton, false);
+        await restartClient();
     });
 
     noticeContainer.appendChild(infoTextWrapper);

@@ -39,7 +39,7 @@ export default defineConfig((config) => ({
             output: {
                 format: 'esm',
                 entryFileNames: 'index.js',
-                inlineDynamicImports: true,     // Bundle everything into one file
+                manualChunks: undefined,  // Allow dynamic imports to create separate chunks
                 assetFileNames(name) {
                     if (name.name === 'style.css')
                         return 'index.css';
@@ -104,7 +104,6 @@ export default defineConfig((config) => ({
 
                 // Add author comment block
                 const Author = `/**\n* @name Astrante Theme\n* @author Astrante\n* @description Astrante theme with AutoAccept for Pengu Loader\n*/`;
-
                 async function prependCommentToFile(filePath: string, commentBlock: string, lineNumber: number) {
                     try {
                         if (!existsSync(filePath)) {
@@ -127,7 +126,6 @@ export default defineConfig((config) => ({
                 // Copy config folder
                 try {
                     await cp(resolve(__dirname, 'src/config'), join(outDir, 'config'), { recursive: true });
-                    console.log('✔ Copying config folder to /dist completed!');
                 } catch (err) {
                     console.error('Error copying config folder:', err);
                 }
@@ -135,7 +133,6 @@ export default defineConfig((config) => ({
                 // Copy locales folder
                 try {
                     await cp(resolve(__dirname, 'src/locales'), join(outDir, 'locales'), { recursive: true });
-                    console.log('✔ Copying locales folder to /dist completed!');
                 } catch (err) {
                     console.error('Error copying locales folder:', err);
                 }
@@ -146,7 +143,6 @@ export default defineConfig((config) => ({
                 try {
                     await emptyDir(pluginsDir);
                     await cp(outDir, pluginsDir, { recursive: true });
-                    console.log(`✔ Copy output to pengu dir completed! (in ${count / 1000}s)`);
                 } catch (err) {
                     console.error('Error while copying to Pengu directory:', err);
                 } finally {

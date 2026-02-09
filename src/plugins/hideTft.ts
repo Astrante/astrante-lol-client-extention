@@ -5,7 +5,7 @@
 export class HideTft {
     private styleElement?: HTMLStyleElement;
 
-    async main() {
+    async main(utils: any) {
         // Build CSS based on settings (recursive tree checking)
         let cssContent = '';
 
@@ -72,9 +72,7 @@ export class HideTft {
 
         // Only add style element if there's CSS to apply
         if (cssContent) {
-            this.styleElement = document.createElement('style');
-            this.styleElement.textContent = cssContent;
-            document.head.appendChild(this.styleElement);
+            this.styleElement = utils.addStyleWithID('hide-tft-styles', cssContent);
         }
     }
 
