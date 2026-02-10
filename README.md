@@ -37,8 +37,9 @@
 4. Run `AstranteTheme-Installer.exe`
 5. Paste copied path (or choose plugins folder) (e.g., `C:\PenguLoader\plugins`)
 6. Click "Install"
-7. Open Pengu Loader → **Plugins** → Select **AstranteTheme**
-8. Restart LoL client
+7. Open Pengu Loader → Enable (check READY)
+8. Switch to **Plugins** → Select **AstranteTheme**
+9. Restart LoL client
 
 #### Method 2: Manual
 
@@ -47,8 +48,9 @@
 3. Download the latest release from [Releases](https://github.com/Astrante/astrante-lol-client-extention/releases/latest)
 4. Extract the archive
 5. Copy to opened plugins folder (`AstranteTheme/` should be inside)
-6. Open Pengu Loader → **Plugins** → Select **AstranteTheme**
-7. Restart LoL client
+6. Open Pengu Loader → Enable (check READY)
+7. Switch to **Plugins** tab → Select **AstranteTheme**
+8. Restart LoL client
 
 ### Languages
 
