@@ -78,9 +78,9 @@ window.addEventListener('load', () => {
     subscribe_endpoint("/lol-gameflow/v1/gameflow-phase", updatePhaseCallback);
 });
 
-// Export utility functions with getters for reactive state
+// Export utility functions
 const utils = {
-    get phase() { return phase; },
+    phase,
     subscribe_endpoint,
     addStyleWithID,
     postToLolApi,
